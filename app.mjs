@@ -34,6 +34,11 @@ async function loadEquipment(){
   for(let i=1;i<=3;i++)beltSections.push(conveyor.getObjectByName('BeltSection'+i));
   for(let i=0;i<65;i++)beltTreads.push(box(conveyor,[.99,.014,.045],[0,1.405,0],mats.dark));
   for(const root of [truck,conveyor])root.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true}});
+  // Reuse the detailed asset; each parked truck has independent door/wheel transforms.
+  for(const [i,x] of [-15,-8.2].entries()){
+    const parked=truck.getObjectByName('TruckAsset').clone(true);
+    parked.name='ParkedSFTruck'+(i+1);parked.position.set(x,.01,12.2);scene.add(parked);
+  }
   return [truck.getObjectByName('DoorLeft'),truck.getObjectByName('DoorRight')];
 }
 function makeParcel(i){
@@ -109,7 +114,7 @@ function frame(now){const dt=Math.min((now-last)/1000,.1);last=now;if(ready){if(
 try{
   setupScene();doors=await loadEquipment();for(let i=0;i<CARGO_COUNT;i++)parcels.push(makeParcel(i));
   const gltf=await new GLTFLoader().loadAsync('./logistics-building.glb');
-  const remove=[];gltf.scene.traverse(obj=>{if(/Vehicle[_ ]0[34]/.test(obj.name)||/Loading.*bay[_ ]07.*dark[_ ]opening/.test(obj.name))remove.push(obj);if(obj.isMesh){obj.castShadow=true;obj.receiveShadow=true;if(obj.material.map)obj.material.map.anisotropy=4}});
+  const remove=[];gltf.scene.traverse(obj=>{if(/Vehicle[_ ]0[1-4]/.test(obj.name)||/Loading.*bay[_ ]07.*dark[_ ]opening/.test(obj.name))remove.push(obj);if(obj.isMesh){obj.castShadow=true;obj.receiveShadow=true;if(obj.material.map)obj.material.map.anisotropy=4}});
   remove.forEach(obj=>obj.removeFromParent());scene.add(gltf.scene);
   ready=true;$('#load-status').textContent='场景已就绪 · 07 号月台';$('#loading').hidden=true;
   for(const id of ['play','reset','next','timeline'])$('#'+id).disabled=false;
