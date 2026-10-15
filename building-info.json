@@ -1,0 +1,12 @@
+{
+  "meshObjects": 216,
+  "triangles": 72199,
+  "glbBytes": 3884032,
+  "sourcePhoto": "reference.jpg",
+  "estimatedDimensionsMeters": {
+    "frontage": 67.5,
+    "mainDepth": 12,
+    "mainHeight": 16.7
+  },
+  "accuracy": "Photo-guided approximation; unobserved sides and dimensions inferred."
+}

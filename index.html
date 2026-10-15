@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>物流站 · 建筑外观复原</title>
+<script type="module" src="./vendor/model-viewer.min.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#e8e7e2;color:#243833;font:16px/1.6 system-ui,sans-serif}header{padding:24px 5vw;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid #cbd1c8}h1{font-size:22px;margin:0}header p{margin:2px 0;color:#52655c;font-size:13px}main{max-width:1440px;margin:auto;padding:24px 5vw}.viewer{position:relative;border:1px solid #cbd1c8;border-radius:18px;overflow:hidden;background:radial-gradient(ellipse at center,#fbfaf4,#dadfd4)}model-viewer{display:block;width:100%;height:68vh;min-height:330px;--progress-bar-color:#287358}.badge{position:absolute;top:18px;left:20px;font-size:12px;color:#52655c;pointer-events:none}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:20px}button,.upload,a.download{font:inherit;border-radius:8px;border:1px solid #a7b8aa;padding:9px 16px;background:#f5f6f0;color:#243833;cursor:pointer;text-decoration:none}button:hover,.upload:hover,a.download:hover{background:#fff}button:focus-visible,.upload:focus-within,a:focus-visible{outline:3px solid #287358;outline-offset:3px}.upload{background:#285c4a;color:white}.upload input{position:absolute;width:1px;height:1px;opacity:0}#status{color:#52655c;font-size:14px}footer{margin-top:20px;font-size:13px;color:#52655c}#error{color:#a63224}a[hidden]{display:none}@media(max-width:600px){header{align-items:start;flex-direction:column;gap:8px}model-viewer{height:58vh}.controls{gap:8px}button,.upload,a.download{padding:8px 12px}}
+</style>
+<header><div><h1>物流站 · 建筑外观复原</h1><p>拖动旋转 · 滚轮缩放 · 右键或双指平移</p></div><span id="name">照片参考 / 外观近似模型</span></header>
+<main>
+<div class="viewer"><span class="badge">照片 → 可编辑几何 → 网页 3D</span><model-viewer id="viewer" src="./logistics-building.glb" alt="根据建筑照片制作的物流站外观近似模型，含蓝窗、装卸口、弧形楼体和场院" camera-controls shadow-intensity="1" exposure="0.85" environment-image="neutral" interaction-prompt="auto" camera-orbit="-18deg 72deg 95m" field-of-view="35deg" min-camera-orbit="auto 5deg auto" max-camera-orbit="auto 89deg auto"></model-viewer></div>
+<div class="controls"><button id="reset">整体视角</button><button id="front">正面立面</button><button id="roof">屋顶俯视</button><button id="rotate" aria-pressed="false">自动旋转</button><a class="download" id="download" href="./logistics-building.glb" download="logistics-building.glb">下载 GLB</a><a class="download" href="./logistics-building.blend" download>Blender 源文件</a><label class="upload">打开其他 GLB<input id="file" type="file" accept=".glb"></label><span id="status" role="status" aria-live="polite">正在加载建筑…</span></div>
+<p id="error" role="alert" hidden></p>
+<footer>依据提供的单张照片制作。正面参照照片，背面、进深与尺寸为推测；车辆为简化陪衬。此模型用于网页展示，不作为测绘或施工依据。</footer>
+<details style="margin-top:20px;border-top:1px solid #cbd1c8;padding-top:16px"><summary style="cursor:pointer">查看参考照片与建模说明</summary><div style="display:flex;flex-wrap:wrap;gap:24px;margin-top:16px"><a href="./reference.jpg" target="_blank" rel="noopener" style="flex:1;min-width:260px"><img src="./reference.jpg" alt="建模参考：蓝窗、装卸口和两端弧形墙面的建筑原始照片" style="width:100%;max-width:620px;border-radius:12px" loading="lazy"></a><div style="flex:1;min-width:260px;color:#52655c"><p>重点复原：三排蓝色窗框、连续装卸口与编号灯牌、雨棚与支架、弧形墙体、立面标识、屋顶栏杆与天线。</p><p>可从任意角度查看，窗框、墙面和车辆均为三维几何。墙面瓷砖与玻璃反射采用本地生成的贴图。</p><p>主楼按约 4 层、12 米进深估算，建筑尺寸尚未经核实。隐藏立面采用简化设计；未重建室内与照片中的人物。</p></div></div></details>
+</main>
+<script type="module">
+const viewer=document.querySelector('#viewer'),status=document.querySelector('#status'),error=document.querySelector('#error'),download=document.querySelector('#download');
+let objectUrl;
+viewer.addEventListener('load',()=>{status.textContent='模型已就绪';error.hidden=true;download.hidden=false});
+viewer.addEventListener('error',()=>{status.textContent='加载失败';error.textContent='无法读取模型。请确认文件是完整的 GLB 格式，并通过本地服务器打开本页。';error.hidden=false;download.hidden=true});
+document.querySelector('#file').addEventListener('change',event=>{const file=event.target.files[0];if(!file)return;if(!/\.glb$/i.test(file.name)){error.textContent='请选择 .glb 模型文件。';error.hidden=false;return}if(objectUrl)URL.revokeObjectURL(objectUrl);objectUrl=URL.createObjectURL(file);status.textContent='正在加载…';error.hidden=true;download.hidden=true;viewer.cameraOrbit='-18deg 72deg auto';viewer.src=objectUrl;document.querySelector('#name').textContent=file.name;download.href=objectUrl;download.download=file.name});
+document.querySelector('#rotate').addEventListener('click',event=>{viewer.autoRotate=!viewer.autoRotate;event.target.setAttribute('aria-pressed',String(viewer.autoRotate));event.target.textContent=viewer.autoRotate?'停止旋转':'自动旋转'});
+function setView(orbit){viewer.autoRotate=false;const rotate=document.querySelector('#rotate');rotate.setAttribute('aria-pressed','false');rotate.textContent='自动旋转';viewer.cameraOrbit=objectUrl?orbit:orbit.replace('auto','95m');viewer.cameraTarget='auto auto auto';viewer.fieldOfView='35deg';viewer.jumpCameraToGoal()}
+document.querySelector('#reset').addEventListener('click',()=>setView('-18deg 72deg auto'));
+document.querySelector('#front').addEventListener('click',()=>setView('0deg 85deg auto'));
+document.querySelector('#roof').addEventListener('click',()=>setView('-15deg 20deg auto'));
+</script>
+</html>

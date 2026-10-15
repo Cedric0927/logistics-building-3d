@@ -1,0 +1,15 @@
+{
+  "index.html": "973be2b3fdbd6319b636bb8fb7bf0e8a4cf57749724123e430682bdac9aecb54",
+  "serve.mjs": "8df2f430853d6e5962c41173b79e526000e1a2ff7b971cdd4cdd3b24fad0f6c3",
+  "package.json": "1065fba70f0aa99a84d9f4f52fad3782a672d26bf3045c90cdc2f9199f229c60",
+  "logistics-building.glb": "7af07f203799f559d3442bdcfe61c2ee3dd4874a665568e9833bbe96fbd2cfbf",
+  "logistics-building.blend": "7e4ef44b993ab58b684f1cead32d6379575d93a4ce73d4399ecfb218740b6dc3",
+  "reference.jpg": "ba505235afca2a2d87cf8bc49d18ac67d4c49fbfd6b24bc5dd37ccb5f714d929",
+  "building-preview.png": "7c4e810a341a054155bee60c0dca181df245c510f42ad933d027fd3de82d0d4b",
+  "building-info.json": "d32a9b9508ba07ef01bc0efa5af7f0f44bbb2c49731b5d7ed96557069d48055b",
+  "create-building.py": "ac2a6e597665399c58add2c184775dfca0955fda246dafb18ad2512a26b139b7",
+  "facade-tiles.png": "772c4160295fda6e6f6fd4fdfb8f6b3102b38cc11f73dd7024e0833c5289a37a",
+  "glass-reflection.png": "6087c6518f82a56f98d7cbb7dfa5af120aaf7848cbee34301ff94f7e897feb42",
+  "vendor/model-viewer.min.js": "18b2e711035aa4705ee281530a55dc2338ff05eed3d70ae16d54105282a75ed5",
+  "vendor/LICENSE-model-viewer": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+}
