@@ -1,0 +1,23 @@
+{
+  "meshes": 88,
+  "triangles": 128866,
+  "glbBytes": 5046348,
+  "truckReference": "User-supplied SF truck photograph; approximate geometry and recreated markings",
+  "pivots": [
+    "TruckAsset",
+    "CargoLeft",
+    "CargoRight",
+    "CargoRoof",
+    "CargoFront",
+    "DoorLeft",
+    "DoorRight",
+    "Wheel_FL",
+    "Wheel_FR",
+    "Wheel_RL",
+    "Wheel_RR",
+    "ConveyorAsset",
+    "BeltSection1",
+    "BeltSection2",
+    "BeltSection3"
+  ]
+}

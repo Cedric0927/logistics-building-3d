@@ -14,3 +14,5 @@ The bundled `vendor/model-viewer.min.js` is Google model-viewer 4.4.0.
 - Distributed bundle includes upstream license notices for its dependencies.
 
 Building geometry and procedural textures were created for this project. The reference photograph was supplied by the repository owner. The SF lettering approximates the signage visible in that photograph.
+
+The refined vehicle also recreates SF / 顺丰速运 / SF EXPRESS markings and a delivery slogan from a separate user-supplied truck photograph. The truck and conveyor geometry were generated in Blender for this project. Brand elements are depicted as reference-based vehicle markings; this is not an official SF product.
