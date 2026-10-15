@@ -1,7 +1,12 @@
 {
-  "index.html": "973be2b3fdbd6319b636bb8fb7bf0e8a4cf57749724123e430682bdac9aecb54",
-  "serve.mjs": "8df2f430853d6e5962c41173b79e526000e1a2ff7b971cdd4cdd3b24fad0f6c3",
-  "package.json": "1065fba70f0aa99a84d9f4f52fad3782a672d26bf3045c90cdc2f9199f229c60",
+  "index.html": "8fe9fb8b6352d7d908ca8a805904dfb668310c40082293ce685fc3424f920c6e",
+  "building.html": "973be2b3fdbd6319b636bb8fb7bf0e8a4cf57749724123e430682bdac9aecb54",
+  "app.mjs": "0bc4722fc6612943498a1e99525ff14e94ec753f69f2a9ee32f61125aa64d930",
+  "simulation.mjs": "8a3122e75c7db30b366f28950ab18feda8659af3206096c08518b18f93c945c4",
+  "simulation.test.mjs": "cae56983d3235b517d489d4631d5f7db10484cb6ec5b36ed054e246995f3b47f",
+  "simulation.css": "c83fa153c8a616d761b9270fb33e919a518d58a3d5a746f96272f57c4477ceac",
+  "serve.mjs": "37ff6f2ccd36e60dbcb14bb221c7d9b06e9f1ac7c9ce3403641bd16d3cd5290f",
+  "package.json": "b6f6915ec9e08c145d2ae5865c0e55e1d7ee0ad584a61a75b0b64e41d723e267",
   "logistics-building.glb": "7af07f203799f559d3442bdcfe61c2ee3dd4874a665568e9833bbe96fbd2cfbf",
   "logistics-building.blend": "7e4ef44b993ab58b684f1cead32d6379575d93a4ce73d4399ecfb218740b6dc3",
   "reference.jpg": "ba505235afca2a2d87cf8bc49d18ac67d4c49fbfd6b24bc5dd37ccb5f714d929",
@@ -11,5 +16,12 @@
   "facade-tiles.png": "772c4160295fda6e6f6fd4fdfb8f6b3102b38cc11f73dd7024e0833c5289a37a",
   "glass-reflection.png": "6087c6518f82a56f98d7cbb7dfa5af120aaf7848cbee34301ff94f7e897feb42",
   "vendor/model-viewer.min.js": "18b2e711035aa4705ee281530a55dc2338ff05eed3d70ae16d54105282a75ed5",
-  "vendor/LICENSE-model-viewer": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  "vendor/LICENSE-model-viewer": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+  "vendor/three/build/three.core.js": "9edde002b066a9a05676a6127f67735b62baf399bdea529f2f7e31657da769e6",
+  "vendor/three/build/three.module.js": "9052042d676cb0fdc1ddfefe193053f34b7ac0513a616fdac4535d49987812ea",
+  "vendor/three/examples/jsm/controls/OrbitControls.js": "3d79d07ecb686b4e5d93232eedab255331c1beef711e13164eaa1f68655a5f2b",
+  "vendor/three/examples/jsm/loaders/GLTFLoader.js": "131c0f78c01d19368ae495caa65b3adaa10487810a36a05bb5901b769a35ac16",
+  "vendor/three/examples/jsm/utils/BufferGeometryUtils.js": "9fb63427ce6641fa14fd0baff9cc4d1b5f9c3d85fd084bf2e90e803c44ec1797",
+  "vendor/three/examples/jsm/utils/SkeletonUtils.js": "b1632a703206c3d830de9fcbe515696770d04b71a15ee6b50afa6d2c3298c86f",
+  "vendor/three/LICENSE": "8b378ebe60e2fe500158cb0ac71cb5e8b7d92953c2abcc63a0eb90499653b5bc"
 }
