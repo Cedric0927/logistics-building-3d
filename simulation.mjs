@@ -1,12 +1,13 @@
 export const DOCK_X=1.22;
+export const CARGO_COUNT=12;
 export const PHASES=[
   {id:'arrive',title:'货车驶入',duration:10,detail:'货车沿场院车道驶入，准备停靠 07 号月台。'},
-  {id:'reverse',title:'倒车靠台',duration:9,detail:'货车倒车进入装卸位，叉车在暂存区等待。'},
+  {id:'reverse',title:'倒车靠台',duration:9,detail:'货车倒车停靠 07 号月台，对准分拨入线传送带。'},
   {id:'open',title:'打开货门',duration:3,detail:'车辆停稳，双开货门展开，开始卸货。'},
-  {id:'unload-0',title:'卸下第 1 托',duration:20,detail:'叉车取出第一托货物，搬运到分拨暂存区。'},
-  {id:'unload-1',title:'卸下第 2 托',duration:20,detail:'叉车返回月台，继续卸下第二托货物。'},
-  {id:'unload-2',title:'卸下第 3 托',duration:20,detail:'最后一托货物卸下，车厢清空。'},
-  {id:'close',title:'关闭货门',duration:3,detail:'叉车退出作业区，货车关闭货门。'},
+  {id:'extend',title:'传送带伸入车厢',duration:6,detail:'伸缩传送带从月台伸进车厢，与室内分拨线连通。'},
+  {id:'unload',title:'传送带直接卸货',duration:32,detail:'纸箱依次上带，直接输送进入厂房分拨线。'},
+  {id:'retract',title:'收回传送带',duration:5,detail:'12 件纸箱已全部进入分拨区，清空后收回伸缩段。'},
+  {id:'close',title:'关闭货门',duration:3,detail:'传送带已完全收回，货车关闭双开货门。'},
   {id:'depart',title:'货车驶离',duration:12,detail:'卸货完成，货车驶出月台，释放装卸位。'}
 ];
 let sum=0;
@@ -28,18 +29,19 @@ export function sample(time){
   if(phase.id==='arrive')truck=polyline([[-34,23],[-12,23],[-2,20],[DOCK_X,20],[DOCK_X,23]],smooth(u));
   else if(phase.id==='reverse'){truck.z=lerp(23,12.2,smooth(u));truck.distance=23-truck.z}
   else if(phase.id==='depart')truck=polyline([[DOCK_X,12.2],[DOCK_X,20],[10,24],[34,24]],smooth(u));
-  const doors=t<19?0:t<22?smooth((t-19)/3):t<82?1:t<85?1-smooth((t-82)/3):0;
-  const index=Math.min(2,Math.max(0,Math.floor((t-22)/20)));
-  let completed=t<22?0:Math.min(3,Math.max(0,Math.floor((t-22)/20))),forklift={x:12,z:16,yaw:Math.PI/2,distance:0},carry=-1,loadHeight=.18,action='在分拨区待命';
-  if(t>=22&&t<82){
-    const v=t-22-index*20,dropZ=16+index*2.5,previousZ=16+Math.max(0,index-1)*2.5;
-    const inbound=[[12,previousZ],[6,previousZ],[6,4.3],[DOCK_X,4.3],[DOCK_X,6.4]],outbound=[[DOCK_X,6.4],[DOCK_X,4.3],[6,4.3],[6,dropZ],[12,dropZ]];
-    if(v<8){forklift=polyline(inbound,smooth(v/8));loadHeight=lerp(.18,1.17,clamp(v/5));action='驶向车尾取货'}
-    else if(v<9.5){forklift=polyline(inbound,1);loadHeight=lerp(1.17,1.35,smooth((v-8)/1.5));action='抬升货叉';if(v>=9)carry=index}
-    else if(v<18){forklift=polyline(outbound,smooth((v-9.5)/8.5));if(forklift.distance<2.1)forklift.yaw=0;loadHeight=1.35;carry=index;action='搬运至分拨区'}
-    else{forklift={...polyline(outbound,1),yaw:Math.PI/2};loadHeight=lerp(1.35,.18,smooth((v-18)/1.5));carry=v<19.5?index:-1;completed=index+(v>=19.5?1:0);action='放下托盘货物'}
-  }else if(t>=82){forklift={x:12,z:21,yaw:Math.PI/2,distance:0};completed=3;action='卸货已完成'}
-  const pallets=Array.from({length:3},(_,i)=>({id:i,mode:i<completed?'sorted':i===carry?'carried':'truck',slot:Math.max(0,i-(t>=22?index:0))}));
-  return {time:t,phase:phase.id,title:done?'本轮作业完成':phase.title,detail:done?'三托货物已全部转入分拨区，货车已驶离。可重置后再次演示。':phase.detail,progress:t/TOTAL,phaseProgress:u,done,truck,doors,completed,pallets,forklift,loadHeight,action,dockBusy:t>=10&&t<90};
+  const doors=t<19?0:t<22?smooth((t-19)/3):t<65?1:t<68?1-smooth((t-65)/3):0;
+  const extension=t<22?0:t<28?smooth((t-22)/6):t<60?1:t<65?1-smooth((t-60)/5):0;
+  const parcels=Array.from({length:CARGO_COUNT},(_,i)=>{
+    const age=t-(28+i*1.8),local={x:i%2===0?-.99:.99,y:1.19+(1-Math.floor(i/6))*.63,z:-3+Math.floor((i%6)/2)*1.25};
+    if(age<0)return {id:i,mode:'truck',local};
+    const startZ=12.2+local.z,travel=(startZ+1)/2.07;
+    if(age<1.2){const p=smooth(age/1.2);return {id:i,mode:'feeding',x:lerp(DOCK_X+local.x,DOCK_X,p),y:lerp(local.y,1.42,p),z:startZ}}
+    if(age<1.2+travel)return {id:i,mode:'belt',x:DOCK_X,y:1.42,z:startZ-(age-1.2)*2.07};
+    return {id:i,mode:'inside'};
+  });
+  const completed=parcels.filter(p=>p.mode==='inside').length;
+  const onBelt=parcels.filter(p=>p.mode==='belt'||p.mode==='feeding').length;
+  const action=phase.id==='extend'?'伸缩段正在伸入':phase.id==='unload'?`入线输送中 · ${onBelt} 件在线`:phase.id==='retract'?'伸缩段正在收回':t>=65?'传送带已收回':'传送带待命';
+  return {time:t,phase:phase.id,title:done?'本轮作业完成':phase.title,detail:done?'12 件纸箱已直接进入厂房分拨线，货车已驶离。':phase.detail,progress:t/TOTAL,phaseProgress:u,done,truck,doors,extension,completed,onBelt,parcels,action,beltTravel:clamp(t-28,0,32)*2.07,dockBusy:t>=10&&t<73};
 }
 export function nextPhase(time){return PHASES.find(p=>p.start>time+.01)?.start??TOTAL}

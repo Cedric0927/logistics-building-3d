@@ -1,35 +1,45 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {sample,nextPhase,PHASES,TOTAL,DOCK_X} from './simulation.mjs';
+import {sample,nextPhase,PHASES,TOTAL,DOCK_X,CARGO_COUNT} from './simulation.mjs';
 
-test('unloading conserves three pallets and requires stationary truck with open doors',()=>{
+test('all cartons go from truck to belt to the indoor line with no yard storage',()=>{
   let previousCount=0;
-  for(let t=0;t<=TOTAL;t+=.05){
+  for(let t=0;t<=TOTAL;t+=.025){
     const s=sample(t);
-    assert.equal(s.pallets.length,3);
-    assert.equal(s.pallets.filter(p=>p.mode==='sorted').length,s.completed);
+    assert.equal(s.parcels.length,CARGO_COUNT);
+    assert.equal(s.parcels.filter(p=>p.mode==='inside').length,s.completed);
     assert(s.completed>=previousCount);
     previousCount=s.completed;
-    assert(s.pallets.filter(p=>p.mode==='carried').length<=1);
-    if(s.pallets.some(p=>p.mode==='carried')){assert.equal(s.doors,1);assert.equal(s.truck.x,DOCK_X);assert.equal(s.truck.z,12.2)}
+    for(const p of s.parcels){
+      assert(['truck','feeding','belt','inside'].includes(p.mode));
+      if(['feeding','belt'].includes(p.mode)){assert.equal(s.doors,1);assert.equal(s.extension,1);assert.equal(s.truck.x,DOCK_X);assert.equal(s.truck.z,12.2)}
+      if(p.mode==='belt'){assert.equal(p.x,DOCK_X);assert(p.z>=-1&&p.z<=12.45)}
+    }
+    if(s.phase==='retract'){assert.equal(s.completed,CARGO_COUNT);assert.equal(s.onBelt,0)}
+    if(s.phase==='close'||s.phase==='depart')assert.equal(s.extension,0);
+    if(s.extension>0)assert.equal(s.doors,1);
   }
-  assert.equal(sample(TOTAL).completed,3);
+  assert.equal(sample(TOTAL).completed,CARGO_COUNT);
   assert.equal(sample(TOTAL).done,true);
   assert.equal(sample(TOTAL).dockBusy,false);
   assert.equal(sample(TOTAL).doors,0);
 });
-test('truck and forklift do not jump at timeline boundaries',()=>{
+test('truck and extension are continuous at phase boundaries',()=>{
   for(const p of PHASES.slice(1)){
     const a=sample(p.start-.00001),b=sample(p.start);
-    for(const name of ['truck','forklift'])assert(Math.hypot(a[name].x-b[name].x,a[name].z-b[name].z)<.001,`${name} jumps at ${p.id}`);
+    assert(Math.hypot(a.truck.x-b.truck.x,a.truck.z-b.truck.z)<.001,`Truck jumps at ${p.id}`);
+    assert(Math.abs(a.extension-b.extension)<.001);
   }
 });
-test('rewinding restores initial cargo, controls stop at completion',()=>{
-  const initial=sample(0);
-  sample(65);sample(TOTAL);
+test('cartons move inward along belt and rewinding restores full cargo',()=>{
+  for(let i=0;i<CARGO_COUNT;i++){
+    const start=28+i*1.8+1.2;
+    const a=sample(start+.01).parcels[i],b=sample(start+3).parcels[i];
+    assert.equal(a.mode,'belt');assert.equal(b.mode,'belt');assert(b.z<a.z);
+  }
+  const initial=sample(0);sample(TOTAL);
   assert.deepEqual(sample(0),initial);
-  assert.equal(nextPhase(0),10);
-  assert.equal(nextPhase(22),42);
+  assert.equal(nextPhase(22),28);
   assert.equal(nextPhase(TOTAL),TOTAL);
   assert.equal(sample(-10).time,0);
   assert.equal(sample(TOTAL+10).time,TOTAL);
