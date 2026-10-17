@@ -43,6 +43,40 @@ PORT=4177 npm start
 
 网页查看组件、模型、贴图和照片全部包含在仓库中。克隆完成后，查看模型不依赖网络、CDN 或外部服务。可以把整个目录放到静态 Web 服务器中展示；GitHub 仓库文件页面本身不会执行网页。
 
+## 只嵌入场景画面
+
+开发演示入口仍为 `index.html`。产品嵌入入口为 **`preview.html`**，全屏铺满 iframe，隐藏设置、进度、按钮、下载链接和场景标签；默认自动、循环播放，保留鼠标旋转缩放。页面初始即隐藏开发界面，加载失败时显示必要的错误提示。
+
+克隆后运行 `npm start`，打开 `http://127.0.0.1:4176/preview.html` 查看纯画面，打开 `embed-example.html` 查看实际嵌入示例。
+
+集成到自己的项目（React / Vue / 普通 HTML 均可）：将仓库静态文件复制到自己项目的 `public/logistics/`，保持目录结构，至少包含 `preview.html`、`index.html`、`app.mjs`、`simulation.mjs`、`lighting.mjs`、`light-cycle.mjs`、`simulation.css`、两个 `.glb` 和 `vendor/three/`。无需复制 Blender 源文件、照片或开发脚本。
+
+```html
+<iframe
+  src="/logistics/preview.html?hour=22&autoplay=1&loop=1"
+  title="物流分拨区三维场景"
+  style="display:block;width:100%;height:600px;border:0"
+  loading="lazy"
+></iframe>
+```
+
+React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}`。iframe 自动适配容器；父项目必须给出非零高度。直接使用 iframe 可隔离 Three.js 版本与 CSS，无需把开发界面接入父项目。
+
+| URL 参数 | 默认值 | 用途 |
+| --- | --- | --- |
+| `hour` | `12` | 0–24 点光照，22 为夜景 |
+| `autoplay` | `1` | 0 为停在指定作业时刻 |
+| `loop` | `1` | 0 为只播放一轮 |
+| `time` | `0` | 初始作业秒数，0–80；40 为卸货阶段 |
+| `speed` | `1` | 作业速度，0.25–4 |
+| `view` | `overview` | overview / dock / truck / equipment / top |
+| `autoLight` | `0` | 1 开启自动昼夜 |
+| `interactive` | `1` | 0 禁止鼠标操作，仅播放画面 |
+
+例如静态夜间卸货特写：`preview.html?hour=22&time=40&autoplay=0&view=dock`。也可直接使用 `index.html?embed=1` 加以上参数。未识别的视角及无效数字回退到默认值，数字越界时限制到支持范围。
+
+集成后由对方项目的 HTTP 静态服务提供这些文件，不需要运行本仓库的 Node 服务。GitHub 仓库地址不能直接作为 iframe 的 src；需先部署到自己的静态站点或项目服务。若使用跨域 iframe，宿主 CSP 的 frame-src、场景服务的 frame-ancestors / X-Frame-Options 应允许对应嵌入；本地 serve.mjs 不设置禁止嵌入的响应头。
+
 ## 包含的文件
 
 | 文件 | 用途 |

@@ -22,3 +22,10 @@ aside ol{margin:14px 0 16px}aside li{padding:3px 0}aside h2{margin-top:16px}asid
 @media(max-width:760px){.stage{height:58vh}.light-controls{flex-wrap:wrap;gap:14px;padding:12px 14px}.light-presets{width:100%}.light-slider{min-width:140px}}
 
 .light-controls{margin-top:0;margin-bottom:16px}[data-night=true] li.complete:before{background:#314d43;border-color:#314d43;color:#c6e1ce}
+
+/* Production embeds: keep the shared renderer, expose only its viewport. */
+html[data-embed=true],html[data-embed=true] body{width:100%;height:100%;margin:0;overflow:hidden;background:transparent}
+[data-embed=true] header,[data-embed=true] aside,[data-embed=true] footer,[data-embed=true] .light-controls,[data-embed=true] .transport,[data-embed=true] .topline,[data-embed=true] .viewbar,[data-embed=true] .scene-help{display:none!important}
+[data-embed=true] main,[data-embed=true] .workspace{display:block;width:100%;height:100%;max-width:none;margin:0;padding:0}
+[data-embed=true] .stage{width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0}
+[data-embed=true] #loading{font-size:13px;background:transparent;color:#526373}

@@ -1,6 +1,6 @@
 {
   "name": "logistics-building-3d",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "type": "module",
   "description": "Photo-guided logistics building exterior, Blender source and offline-ready GLB web viewer",

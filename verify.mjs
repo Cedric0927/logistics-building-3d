@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 const files=['index.html','building.html','app.mjs','simulation.mjs','simulation.test.mjs','simulation.css','serve.mjs','package.json','logistics-building.glb','logistics-building.blend','reference.jpg','building-preview.png','building-info.json','create-building.py','facade-tiles.png','glass-reflection.png','vendor/model-viewer.min.js','vendor/LICENSE-model-viewer'];
 const root=new URL('.',import.meta.url);
-files.push('lighting.mjs','light-cycle.mjs','lighting.test.mjs','create-equipment.py','refined-equipment.blend','refined-equipment.glb','equipment-preview.png','equipment-info.json');
+files.push('preview.html','embed-example.html','lighting.mjs','light-cycle.mjs','lighting.test.mjs','create-equipment.py','refined-equipment.blend','refined-equipment.glb','equipment-preview.png','equipment-info.json');
 async function collect(dir){for(const entry of await readdir(new URL(dir,root),{withFileTypes:true})){const name=dir+'/'+entry.name;if(entry.isDirectory())await collect(name);else files.push(name)}}
 await collect('vendor/three');
 const hashes={};

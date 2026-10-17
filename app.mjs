@@ -6,6 +6,8 @@ import {createLighting} from './lighting.mjs';
 import {formatHour} from './light-cycle.mjs';
 import {sample,nextPhase,TOTAL,DOCK_X,CARGO_COUNT} from './simulation.mjs';
 
+const params=new URLSearchParams(location.search),embedded=params.get('embed')==='1';
+const optionNumber=(name,fallback,min,max)=>{const value=params.get(name);const n=value===null?NaN:Number(value);return Number.isFinite(n)?Math.min(max,Math.max(min,n)):fallback};
 const $=s=>document.querySelector(s),container=$('#scene');
 let renderer,ready=false,playing=false,time=0,last=performance.now(),speed=1,lastTitle='';
 const scene=new THREE.Scene();
@@ -78,7 +80,7 @@ function setView(view){
   const presets={overview:{pos:aspect<1?[-82,80,135]:[-53,44,83],target:[0,6,7]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[0,112,15],target:[0,0,7]}};
   if(view==='equipment')$('#cutaway').checked=true;
   if(view==='truck')$('#cutaway').checked=false;
-  if(dockLabel)dockLabel.visible=['overview','top'].includes(view);
+  if(dockLabel)dockLabel.visible=!embedded&&['overview','top'].includes(view);
   const v=presets[view];camera.position.set(...v.pos);controls.target.set(...v.target);controls.update();if(ready)renderState();
   document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('selected',b.dataset.view===view));
 }
@@ -112,7 +114,7 @@ $('#timeline').max=TOTAL;$('#timeline').addEventListener('input',e=>{time=Number
 $('#speed').addEventListener('change',e=>{speed=Number(e.target.value)});
 $('#cutaway').addEventListener('change',()=>{if(ready)renderState()});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
-document.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle()}else if(e.code==='KeyR'&&ready){time=0;playing=false;renderState()}});
+document.addEventListener('keydown',e=>{if(embedded)return;if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle()}else if(e.code==='KeyR'&&ready){time=0;playing=false;renderState()}});
 function syncLightUI(){
   $('#light-time').value=targetHour;$('#light-clock').textContent=formatHour(targetHour);
   document.querySelectorAll('[data-hour]').forEach(b=>{const selected=Math.abs(Number(b.dataset.hour)-targetHour)<.08;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected))});
@@ -136,5 +138,14 @@ try{
   remove.forEach(obj=>obj.removeFromParent());scene.add(gltf.scene);
   ready=true;$('#load-status').textContent='场景已就绪 · 07 号月台';$('#loading').hidden=true;
   for(const id of ['play','reset','next','timeline'])$('#'+id).disabled=false;
+  if(embedded){
+    time=optionNumber('time',0,0,TOTAL);speed=optionNumber('speed',1,.25,4);
+    lightHour=targetHour=optionNumber('hour',12,0,24);
+    playing=params.get('autoplay')!=='0';$('#loop').checked=params.get('loop')!=='0';
+    $('#auto-light').checked=params.get('autoLight')==='1';
+    controls.enabled=params.get('interactive')!=='0';
+    const view=params.get('view');setView(['overview','dock','truck','equipment','top'].includes(view)?view:'overview');
+    syncLightUI();
+  }
   lighting.setHour(lightHour);renderState();requestAnimationFrame(frame);
 }catch(error){console.error(error);$('#load-status').textContent='场景加载失败';$('#loading').textContent='无法加载 3D 场景。请检查浏览器 WebGL 支持及本地文件，或打开右上角的静态建筑预览。'}
