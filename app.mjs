@@ -2,13 +2,16 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {createLighting} from './lighting.mjs';
+import {formatHour} from './light-cycle.mjs';
 import {sample,nextPhase,TOTAL,DOCK_X,CARGO_COUNT} from './simulation.mjs';
 
 const $=s=>document.querySelector(s),container=$('#scene');
 let renderer,ready=false,playing=false,time=0,last=performance.now(),speed=1,lastTitle='';
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(40,1,.1,400);
-let controls,dockLabel;
+let controls,dockLabel,lighting;
+let lightHour=12,targetHour=12;
 const truck=new THREE.Group(),conveyor=new THREE.Group();
 const wheels=[],parcels=[],cutawayParts=[],beltSections=[],beltTreads=[];
 const mats={};
@@ -39,6 +42,9 @@ async function loadEquipment(){
     const parked=truck.getObjectByName('TruckAsset').clone(true);
     parked.name='ParkedSFTruck'+(i+1);parked.position.set(x,.01,12.2);scene.add(parked);
   }
+  lighting.bindTruck(truck);
+  for(const o of scene.children)if(o.name.startsWith('ParkedSFTruck'))lighting.bindTruck(o);
+  lighting.bindConveyor(conveyor);
   return [truck.getObjectByName('DoorLeft'),truck.getObjectByName('DoorRight')];
 }
 function makeParcel(i){
@@ -55,11 +61,9 @@ function zone(x,z,w,d,color){
   const line=new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineDashedMaterial({color,dashSize:.45,gapSize:.25}));line.computeLineDistances();scene.add(line);
 }
 function setupScene(){
-  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;container.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','三维物流场院：货车、伸缩传送带与入线纸箱');
+  renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;container.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','三维物流场院：货车、伸缩传送带与入线纸箱');
   controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2-.025;controls.minDistance=12;controls.maxDistance=160;
-  scene.add(new THREE.HemisphereLight(0xf6faff,0xbab09a,3));
-  const sun=new THREE.DirectionalLight(0xfff6df,3.2);sun.position.set(-30,60,35);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-50,right:50,top:45,bottom:-45,near:1,far:150});sun.shadow.bias=-.0002;sun.shadow.normalBias=.035;scene.add(sun);
-  scene.add(new THREE.AmbientLight(0xffffff,.3));
+  lighting=createLighting(scene,renderer,$('#stage'));
   const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();scene.environment=pmrem.fromScene(room,.04).texture;scene.environmentIntensity=.65;room.dispose();pmrem.dispose();
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),new THREE.ShadowMaterial({opacity:.14}));ground.rotation.x=-Math.PI/2;ground.position.y=-.45;ground.receiveShadow=true;scene.add(ground);
   zone(DOCK_X,13,4.2,10,'#3b8b65');
@@ -109,8 +113,22 @@ $('#speed').addEventListener('change',e=>{speed=Number(e.target.value)});
 $('#cutaway').addEventListener('change',()=>{if(ready)renderState()});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 document.addEventListener('keydown',e=>{if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle()}else if(e.code==='KeyR'&&ready){time=0;playing=false;renderState()}});
+function syncLightUI(){
+  $('#light-time').value=targetHour;$('#light-clock').textContent=formatHour(targetHour);
+  document.querySelectorAll('[data-hour]').forEach(b=>{const selected=Math.abs(Number(b.dataset.hour)-targetHour)<.08;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected))});
+}
+function changeLight(hour){targetHour=Number(hour);$('#auto-light').checked=false;syncLightUI()}
+$('#light-time').addEventListener('input',e=>changeLight(e.target.value));
+document.querySelectorAll('[data-hour]').forEach(b=>b.addEventListener('click',()=>changeLight(b.dataset.hour)));
+syncLightUI();
 document.addEventListener('visibilitychange',()=>{last=performance.now()});
-function frame(now){const dt=Math.min((now-last)/1000,.1);last=now;if(ready){if(playing&&!document.hidden){time+=dt*speed;if(time>=TOTAL){if($('#loop').checked)time%=TOTAL;else{time=TOTAL;playing=false}}}renderState()}controls?.update();renderer?.render(scene,camera);requestAnimationFrame(frame)}
+function frame(now){const dt=Math.min((now-last)/1000,.1);last=now;
+  if(ready){
+    if($('#auto-light').checked&&!document.hidden){targetHour=(targetHour+dt*.2)%24;syncLightUI()}
+    let delta=targetHour-lightHour;if(delta>12)delta-=24;if(delta< -12)delta+=24;
+    lightHour=(lightHour+delta*Math.min(1,dt*5)+24)%24;lighting.setHour(lightHour);
+  }
+if(ready){if(playing&&!document.hidden){time+=dt*speed;if(time>=TOTAL){if($('#loop').checked)time%=TOTAL;else{time=TOTAL;playing=false}}}renderState()}controls?.update();renderer?.render(scene,camera);requestAnimationFrame(frame)}
 try{
   setupScene();doors=await loadEquipment();for(let i=0;i<CARGO_COUNT;i++)parcels.push(makeParcel(i));
   const gltf=await new GLTFLoader().loadAsync('./logistics-building.glb');
@@ -118,5 +136,5 @@ try{
   remove.forEach(obj=>obj.removeFromParent());scene.add(gltf.scene);
   ready=true;$('#load-status').textContent='场景已就绪 · 07 号月台';$('#loading').hidden=true;
   for(const id of ['play','reset','next','timeline'])$('#'+id).disabled=false;
-  renderState();requestAnimationFrame(frame);
+  lighting.setHour(lightHour);renderState();requestAnimationFrame(frame);
 }catch(error){console.error(error);$('#load-status').textContent='场景加载失败';$('#loading').textContent='无法加载 3D 场景。请检查浏览器 WebGL 支持及本地文件，或打开右上角的静态建筑预览。'}

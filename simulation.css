@@ -2,3 +2,23 @@
 aside ol{margin:14px 0 16px}aside li{padding:3px 0}aside h2{margin-top:16px}aside .note{margin-top:12px}
 
 .viewbar{max-width:calc(100% - 24px);flex-wrap:wrap}footer div{flex-wrap:wrap}
+
+.stage{background:linear-gradient(var(--sky-top,#c6e0ea),var(--sky-bottom,#edf0e5));height:calc(100vh - 340px)}
+.light-controls{display:flex;align-items:center;gap:28px;margin-top:16px;padding:12px 20px;border:1px solid #d2d9cc;border-radius:14px;background:#f7f8f1}
+.light-presets{display:flex;align-items:center;gap:5px}.light-presets>span{font-size:12px;margin-right:10px;color:#687d62}.light-presets button{padding:7px 14px;font-size:12px}.light-presets button.selected{background:#2c5b44;color:#fff;border-color:#2c5b44}
+.light-slider{flex:1;min-width:140px}.light-slider label{display:flex;justify-content:space-between;font-size:11px;color:#687d62}.light-slider input{margin-top:5px}.light-controls .check{margin:0;white-space:nowrap}
+:root,aside,.transport,.light-controls,button,header{transition:background-color .7s,color .7s,border-color .7s}
+:root[data-night=true]{background:#131c26;color:#dfebea}
+[data-night=true] aside,[data-night=true] .transport,[data-night=true] .light-controls{background:#1c2935;border-color:#3a4a55}
+[data-night=true] header,[data-night=true] .stage{border-color:#3a4a55}
+[data-night=true] button,[data-night=true] .speed select{background:#263a45;color:#e1ece8;border-color:#4b605f}
+[data-night=true] button:hover:not(:disabled){background:#38504d}
+[data-night=true] .primary,[data-night=true] button.selected{background:#39735a;color:white}
+[data-night=true] .viewbar{background:#1c2935ed;border-color:#4b605f}
+[data-night=true] .brand p,[data-night=true] h1 span,[data-night=true] .text-link,[data-night=true] #phase-detail,[data-night=true] .check,[data-night=true] .light-slider label,[data-night=true] .light-presets>span,[data-night=true] .belt-status,[data-night=true] footer,[data-night=true] footer a,[data-night=true] .speed,[data-night=true] .scrub label,[data-night=true] .note,[data-night=true] .metrics span{color:#a9bcbb}
+[data-night=true] .eyebrow,[data-night=true] #load-status,[data-night=true] .scene-help{color:#d1dfdf}
+[data-night=true] li.active{color:#b4e4c8}[data-night=true] li.complete{color:#96bfa6}
+[data-night=true] .pill{background:#314d43;color:#c6e1ce}
+@media(max-width:760px){.stage{height:58vh}.light-controls{flex-wrap:wrap;gap:14px;padding:12px 14px}.light-presets{width:100%}.light-slider{min-width:140px}}
+
+.light-controls{margin-top:0;margin-bottom:16px}[data-night=true] li.complete:before{background:#314d43;border-color:#314d43;color:#c6e1ce}
