@@ -1,12 +1,24 @@
 # 物流站 · 建筑外观与装卸作业模拟
 
-根据一张建筑照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
+根据原始建筑照片和两张天桥照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
 
 货车已按用户提供的顺丰实车照片精修：黑色厢式车身、导流罩、倾斜风挡、竖向灯组、轮胎纹路、轮毂螺母、门锁五金，以及 SF / 顺丰速运 / SF EXPRESS 标识、红色横线与反光条。传送带包含滚筒、三级套接框架、驱动电机、调平支脚、急停及控制盒。
 
 ![精修货车与传送带](equipment-preview.png)
 
 ![建筑模型预览](building-preview.png)
+
+## 新增左侧楼翼与中间天桥
+
+原有右侧楼翼保留，按新增两张参考照片补建左侧楼翼、圆角中间入口、双列蓝色高窗、SF EXPRESS 入口牌、架空人行桥与楼梯。桥面加入菱形防滑铺装、不锈钢栏杆和橙色提示牌。原先右侧单体扩大为约 135 米总立面的双翼模型，所有尺寸均为估算。
+
+- 开发页面增加“全楼总览 / 右侧楼翼 / 左侧楼翼 / 天桥楼梯”视角，保留作业控制面板。
+- 左侧雨棚灯、办公室窗光和入口照明接入已有昼夜系统；全楼视角与阴影范围一并调整。
+- 右侧 07 号月台装卸流程保留；驶入起点向右移开，使货车绕开新天桥及楼梯。
+- 新照片并入仓库：`reference-right-bridge.jpg` 对应第一张右侧照片，`reference-left-bridge.jpg` 对应第二张左侧照片。模型、Blender 源文件和生成脚本同步更新。
+- 两张照片不能确定完整平面：目前采用两翼沿同一主立面连接的近似布局；天桥长度、桥面高度、楼梯下半段与折返平台按照片推定，后续可用平面图或地面照片修正。
+
+![中间入口与天桥楼梯](bridge-preview.png)
 
 ## 克隆后直接查看
 
@@ -69,7 +81,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `loop` | `1` | 0 为只播放一轮 |
 | `time` | `0` | 初始作业秒数，0–80；40 为卸货阶段 |
 | `speed` | `1` | 作业速度，0.25–4 |
-| `view` | `overview` | overview / dock / truck / equipment / top |
+| `view` | `overview` | overview / right / left / bridge / dock / truck / equipment / top |
 | `autoLight` | `0` | 1 开启自动昼夜 |
 | `interactive` | `1` | 0 禁止鼠标操作，仅播放画面 |
 
@@ -91,7 +103,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `create-equipment.py` | Blender 精修设备生成脚本 |
 | `equipment-preview.png` / `equipment-info.json` | 设备渲染及规模说明 |
 | `building.html` | 原始静态建筑查看器 |
-| `logistics-building.glb` | 约 3.9 MB 的网页模型，内嵌贴图 |
+| `logistics-building.glb` | 约 8.1 MB 的网页模型，内嵌贴图 |
 | `logistics-building.blend` | 可编辑 Blender 源文件 |
 | `reference.jpg` | 用户提供的建模参考照片 |
 | `building-preview.png` | 模型渲染预览 |
@@ -137,6 +149,6 @@ blender --background --factory-startup --python create-building.py -- --font /pa
 
 ## 复原范围
 
-重点复原三排蓝色窗框、连续装卸口、编号灯牌、雨棚与支架、弧形墙面、立面标识、屋顶栏杆与天线。车辆为简化陪衬。背面、进深和尺寸来自推测，未还原室内与人物；这是用于网页展示的外观近似模型，不是测绘或施工模型。
+重点复原左右楼翼、三排蓝色窗框、连续装卸口、编号灯牌、雨棚与支架、中间圆角入口、人行天桥、栏杆及楼梯，保留右侧精修货车与装卸作业。静态建筑查看器内的车辆仍为简化陪衬。背面、进深和尺寸来自推测，未还原室内与人物；这是用于网页展示的外观近似模型，不是测绘或施工模型。
 
 第三方组件信息见 [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)。

@@ -1,10 +1,17 @@
 {
-  "meshObjects": 216,
-  "triangles": 72199,
-  "glbBytes": 3884032,
+  "meshObjects": 358,
+  "triangles": 160626,
+  "glbBytes": 8093228,
   "sourcePhoto": "reference.jpg",
+  "additionalPhotos": [
+    "reference-right-bridge.jpg",
+    "reference-left-bridge.jpg"
+  ],
+  "bridgeDeckMeters": 4.7,
+  "stairRisers": 28,
+  "layoutNote": "Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.",
   "estimatedDimensionsMeters": {
-    "frontage": 67.5,
+    "frontage": 135,
     "mainDepth": 12,
     "mainHeight": 16.7
   },

@@ -149,7 +149,7 @@ FONT = bpy.data.fonts.load(str(font_path)) if font_path else None
 
 # Estimated main envelope: 64 m frontage, four storeys, a 12 m deep wing.
 # Front faces negative Y. Rear and end elevations below are deliberately simplified.
-box('Site / foundation', (0,-8,-.22), (77,43,.42), GROUND)
+box('Site / foundation', (-33,-8,-.22), (145,43,.42), GROUND)
 box('Main / upper three storeys', (-1,0,10.30), (53,12,11.6), TILE)
 box('Main / loading hall back wall', (-1,4.2,2.15), (53,3.6,4.3), ROOF)
 box('Main / loading platform', (-1,-2.15,.31), (53,9,.6), ROOF)
@@ -158,10 +158,10 @@ for y in (-6.05,6.05):
     box('Main / parapet',(-1,y,16.45),(53.5,.22,.65),TILE)
 
 # Left rounded stair tower, taller and slightly forward of main facade.
-left=round_outline(-33,-27,-7.25,6,2.65)
-prism('Left / rounded stair tower',left,0,18,TILE)
-prism('Left / roof',left,18,18.2,ROOF)
-box('Left / plinth',(-30,-.4,.38),(6.1,13.4,.65),ROOF)
+left=round_outline(-39,-27,-7.9,6,2.0)
+prism('Center / rounded entrance tower',left,0,18,TILE)
+prism('Center / roof',left,18,18.2,ROOF)
+box('Center / plinth',(-33,-.4,.38),(12.1,13.4,.65),ROOF)
 
 # Rounded right tower with the two tall blue window columns and facade badge.
 right=round_outline(25.5,34.5,-7.9,6.1,1.8)
@@ -358,6 +358,177 @@ for x in (-35.5,35.5):
 for x in (-22.5,11,20):
     box('Loading / parcels',(x,-7.9,.8),(.7,.7,.8),ROOF)
 
+# Left wing and pedestrian access, guided by the two additional bridge photos.
+# Original right-wing coordinates and animated loading bay remain unchanged.
+def bridge_pixel(x, y):
+    x, y = x % 128, y % 128
+    d = min(abs(x-y), abs(x+y-127))
+    edge = min(x,y,127-x,127-y)
+    value = 148 if edge < 2 or d < 2 else 64 + (17 if x > y else 0) + (10 if x+y > 127 else 0)
+    value += 5 if (x*3+y*5) % 11 < 3 else -3
+    return (value, value+2, value+1)
+png(ROOT/'bridge-pavers.png',512,512,bridge_pixel)
+PAVER=mat('Dark diamond anti-slip bridge pavers',(.22,.24,.23),.94,texture='bridge-pavers.png')
+ORANGE=mat('Orange bridge safety signs',(.94,.29,.035),.56)
+SIGNWHITE=mat('White safety lettering',(.94,.96,.94),.5)
+
+# A matching four-storey left wing. Its unseen depth follows the original wing.
+box('LeftWing / upper storeys',(-65.5,0,10.30),(53,12,11.6),TILE)
+box('LeftWing / hall rear wall',(-65.5,4.2,2.15),(53,3.6,4.3),ROOF)
+box('LeftWing / loading platform',(-65.5,-2.15,.31),(53,9,.6),ROOF)
+box('LeftWing / roof',(-65.5,0,16.15),(53.3,12.3,.18),ROOF)
+for y in (-6.05,6.05):
+    box('LeftWing / parapet',(-65.5,y,16.45),(53.5,.22,.65),TILE)
+    for z in (16.95,17.18):
+        tube('LeftWing / roof rails',(-92,y,z),(-39,y,z),.024,METAL)
+    for i in range(93):
+        x=-92+i*.575
+        tube('LeftWing / roof balusters',(x,y,16.73),(x,y,17.18),.016,METAL,5)
+left_xs=[x-64.5 for x in xs]
+for row,z in enumerate((6.6,10.05,13.5)):
+    for col,x in enumerate(left_xs):
+        front_window('LeftWing / windows level '+str(row+1),x,-6.10,z,w=1.65,h=2.05,opened=(row,col) in {(0,2),(1,5),(2,9)})
+        box('LeftWing / rear glazing',(x,6.10,z),(1.5,.06,1.9),GLASS)
+        for dx in (-.77,0,.77):
+            box('LeftWing / rear frames',(x+dx,6.17,z),(.07,.12,2),BLUE)
+        for dz in (-.97,.97,.2):
+            box('LeftWing / rear frames',(x,6.17,z+dz),(1.6,.12,.07),BLUE)
+for z in (4.58,8.29,11.76):
+    box('LeftWing / floor joints',(-65.5,-6.15,z),(53.1,.14,.065),ROOF)
+box('LeftWing / service gutter',(-65.5,-6.42,11.66),(53.1,.34,.14),DARK)
+box('LeftWing / gutter edge',(-65.5,-6.59,11.6),(53.1,.05,.065),METAL)
+for x in left_xs:
+    tube('LeftWing / gutter brackets',(x,-6.1,11.78),(x,-6.52,11.48),.028,DARK)
+for x in (-91.5,-39.2):
+    tube('LeftWing / downpipes',(x,-6.33,.65),(x,-6.33,16.3),.065,METAL)
+for i in range(13):
+    box('LeftWing / loading columns',(-92+i*4.42,-5.7,2.32),(.33,.62,4.08),TILE)
+for i in range(12):
+    x=-89.8+i*4.42
+    section=f'LeftWing / loading bay {i+13:02d}'
+    box(section+' / dark opening',(x,-3.15,2.05),(3.85,.08,3.35),GLASS_DARK)
+    for dx in (-1.76,1.76):
+        box('LeftWing / dock guides',(x+dx,-3.28,2.05),(.075,.12,3.4),METAL)
+        for z in (.85,1.65,2.45,3.25):
+            box('LeftWing / dock safety bands',(x+dx,-3.36,z),(.08,.045,.23),RED)
+    box('LeftWing / dock signs backing',(x,-8.18,4.07),(3.48,.18,.39),DARK)
+    text(section+' / identifier',f'卸货区 {i+13:02d}' if FONT else f'DOCK {i+13:02d}',(x,-8.29,4.07),.24,RED,font=FONT)
+    box('LeftWing / dock bumpers',(x,-6.77,.50),(1.5,.24,.25),DARK)
+    box('LeftWing / dock steps',(x,-7.03,.22),(3.5,.5,.25),ROOF)
+box('LeftWing / canopy',(-65.5,-7,4.55),(53.6,2.2,.14),METAL)
+box('LeftWing / canopy fascia',(-65.5,-8.08,4.42),(53.8,.14,.27),DARK)
+for i in range(80):
+    box('LeftWing / canopy seams',(-92+i*.67,-7,4.65),(.025,2.1,.035),ROOF)
+for x in (-90,-82,-74,-66,-58,-50,-42):
+    tube('LeftWing / canopy stays',(x,-6.1,5.33),(x,-8.05,4.57),.035,METAL)
+    box('LeftWing / air conditioners',(x,-6.48,5.2),(.85,.48,.56),WHITE)
+    tube('LeftWing / AC fans',(x,-6.73,5.2),(x,-6.77,5.2),.19,DARK,16)
+    for dz in (-.17,-.08,.01,.10,.19):
+        box('LeftWing / AC grille',(x+.23,-6.73,5.2+dz),(.23,.03,.025),METAL)
+outer=round_outline(-100.5,-92,-7.9,6.1,1.7)
+prism('LeftWing / outer rounded tower',outer,0,17,TILE)
+prism('LeftWing / outer tower roof',outer,17,17.18,ROOF)
+for z in (6.6,10.05,13.5):
+    for x in (-98,-95.5):
+        front_window('LeftWing / outer tall windows',x,-7.98,z,w=1.3,h=2.8,tall=True)
+for i,a in enumerate(outer):
+    b=outer[(i+1)%len(outer)]
+    tube('LeftWing / outer roof rails',(*a,17.6),(*b,17.6),.025,METAL)
+    tube('LeftWing / outer roof posts',(*a,17.16),(*a,17.6),.018,METAL)
+box('LeftWing / outer entrance',(-96.3,-7.99,1.7),(2.7,.12,3.2),GLASS_DARK)
+for x in (-95,-70,-48):
+    box('LeftWing / roof access',(x,3,17.2),(3.6,3,1.8),TILE)
+    box('LeftWing / roof access caps',(x,3,18.15),(3.8,3.2,.14),METAL)
+for x in (-96,-89,-82,-75,-68,-61,-54,-47,-40):
+    box('LeftWing / parking stripes',(x,-16,.008),(.08,13,.016),LINE)
+box('LeftWing / stop line',(-66,-9.3,.015),(66,.09,.02),LINE)
+box('LeftWing / lane edge',(-66,-24.4,.015),(66,.09,.02),LINE)
+for x in (-89,-67,-51):
+    box('LeftWing / direction arrows',(x,-22,.023),(.2,2.8,.025),LINE)
+    poly('LeftWing / direction arrows',LINE,[(x-.75,-21,.038),(x+.75,-21,.038),(x,-20,.038)],[(0,1,2)])
+
+# Central rounded lobby: bridge enters at the first upper-floor level.
+for z in (10.2,14.1):
+    for x in (-34.45,-31.55):
+        front_window('Center / tall entrance windows',x,-7.98,z,w=2.05,h=3.1,tall=True)
+box('Center / entry door glazing',(-33,-7.99,5.96),(3.8,.10,2.52),GLASS_DARK)
+for x in (-35.04,-33,-30.96):
+    box('Center / entry aluminum mullions',(x,-8.1,6.02),(.12,.16,2.64),METAL)
+box('Center / entry door header',(-33,-8.1,7.34),(4.2,.18,.13),METAL)
+for x in (-33.25,-32.75):
+    tube('Center / door pull handles',(x,-8.23,5.72),(x,-8.23,6.20),.026,METAL)
+box('Center / SF entrance sign',(-33,-8.23,7.88),(6.6,.32,1.05),DARK)
+text('Center / SF EXPRESS lettering','SF EXPRESS',(-33,-8.405,8.04),.52,SIGNWHITE)
+text('Center / SF Chinese lettering','顺丰速运' if FONT else 'LOGISTICS',(-33,-8.415,7.65),.24,SIGNWHITE,font=FONT)
+box('Center / ground service entry',(-33,-7.99,1.65),(2.2,.10,3.1),GLASS_DARK)
+
+# Elevated walkway, supported by columns and cross beams (estimated deck +4.70m).
+DECK=4.7
+box('Bridge / structural deck',(-33,-15.5,DECK-.17),(4.4,15,.34),ROOF)
+box('Bridge / diamond walkway',(-33,-15.5,DECK+.016),(4.3,15,.03),PAVER)
+for y in (-10.5,-16.5,-22.8):
+    for x in (-34.85,-31.15):
+        box('Bridge / concrete support piers',(x,y,2.19),(.40,.45,4.38),TILE)
+    box('Bridge / cross beams',(-33,y,4.35),(4.5,.48,.34),ROOF)
+for x in (-35.12,-30.88):
+    box('Bridge / edge stringers',(x,-15.5,4.40),(.15,15,.25),DARK)
+
+def handrail(name,a,b):
+    # a/b are points on the walking surface; rails follow slope on stairs.
+    for height,r in ((1.1,.048),(.55,.025),(.13,.021)):
+        tube(name+' / rails',(a[0],a[1],a[2]+height),(b[0],b[1],b[2]+height),r,METAL,10)
+    distance=(Vector(b)-Vector(a)).length
+    n=max(1,math.ceil(distance/.28))
+    for i in range(n+1):
+        t=i/n;p=Vector(a).lerp(Vector(b),t)
+        tube(name+' / balusters',(p.x,p.y,p.z+.04),(p.x,p.y,p.z+1.1),.017,METAL,6)
+for x in (-35.16,-30.84):
+    handrail('Bridge / stainless guardrails',(x,-8.2,DECK),(x,-23,DECK))
+
+# Orange warning panels attached to the two sides, matching the photographed bridge.
+for side,phrase in ((-1,'上下楼梯注意安全'),(1,'注意安全严禁翻越')):
+    x=-33+side*2.19
+    for i,char in enumerate(phrase):
+        y=-10.1-i*1.55
+        box('Bridge / orange safety panels',(x,y,DECK+.60),(.055,1.25,.83),ORANGE)
+        text('Bridge / safety text '+str(side)+' '+str(i),char if FONT else '!',(x+side*.034,y,DECK+.60),.63,SIGNWHITE,rotation=(math.pi/2,0,side*math.pi/2),font=FONT)
+
+# Top platform, two 14-riser flights and an intermediate return landing.
+# The lower flight is only partly photographed; this arrangement is inferred.
+box('Stairs / upper landing',(-35.1,-24.25,DECK-.18),(8.6,2.5,.36),ROOF)
+box('Stairs / upper landing pavers',(-35.1,-24.25,DECK+.016),(8.5,2.45,.03),PAVER)
+handrail('Stairs / top landing front',(-39.4,-25.5,DECK),(-30.84,-25.5,DECK))
+handrail('Stairs / top landing east',(-30.84,-25.5,DECK),(-30.84,-23,DECK))
+handrail('Stairs / landing inner',(-37.1,-23,DECK),(-35.16,-23,DECK))
+STAIR_WIDTH=2.3
+rise=(DECK-.08)/28
+run=.34
+mid=DECK-14*rise
+# top flight runs toward the facade; lower flight returns toward the courtyard.
+for flight,cx,y0,direction,top in ((0,-38.25,-23,1,DECK),(1,-41.0,-18.24,-1,mid)):
+    for i in range(14):
+        z=top-(i+1)*rise
+        y=y0+direction*(i+.5)*run
+        box('Stairs / concrete treads',(cx,y,z-.09),(STAIR_WIDTH,run,.18),ROOF)
+        box('Stairs / anti-slip tread faces',(cx,y,z+.013),(STAIR_WIDTH-.05,run-.015,.024),PAVER)
+        box('Stairs / bright tread nosings',(cx,y-direction*(run/2-.035),z+.035),(STAIR_WIDTH-.05,.045,.018),METAL)
+    for edge in (-1,1):
+        x=cx+edge*(STAIR_WIDTH/2+.03)
+        handrail('Stairs / sloping stainless rails',(x,y0,top),(x,y0+direction*14*run,top-14*rise))
+        tube('Stairs / structural stringers',(x,y0,top-.27),(x,y0+direction*14*run,top-14*rise-.27),.095,DARK,8)
+box('Stairs / return landing',(-39.62,-17.5,mid-.16),(5.1,1.48,.32),ROOF)
+box('Stairs / return landing pavers',(-39.62,-17.5,mid+.016),(5.05,1.44,.03),PAVER)
+handrail('Stairs / return outer rail',(-42.17,-16.76,mid),(-37.07,-16.76,mid))
+for x in (-42,-37.3):
+    box('Stairs / landing support legs',(x,-17.45,(mid-.32)/2),(.30,.35,mid-.32),METAL)
+box('Stairs / ground landing',(-41,-23.8,.04),(2.8,1.7,.08),ROOF)
+# Keep stairwell separated from road traffic with yellow/black protection posts.
+for x in (-43,-39):
+    box('Stairs / protection bollards',(x,-25,.53),(.32,.32,1.06),YELLOW)
+    for z in (.25,.65):
+        box('Stairs / bollard bands',(x,-25,z),(.34,.34,.14),DARK)
+
+
 # Build batched, named meshes. World-space planar UVs keep tile density consistent.
 for (name,material),(verts,faces) in geometry.items():
     mesh=bpy.data.meshes.new(name)
@@ -376,6 +547,8 @@ for (name,material),(verts,faces) in geometry.items():
                 u,v=co.y,co.z
             if material==TILE:
                 uv.data[li].uv=(u/3.2,v/3.2)
+            elif material==PAVER:
+                uv.data[li].uv=(u/1.44,v/1.44)
             elif material in (GLASS,):
                 uv.data[li].uv=(u/2.2,v/2.4)
             else:
@@ -392,15 +565,15 @@ for obj in list(bpy.context.scene.objects):
         bpy.context.view_layer.objects.active=obj
         bpy.ops.object.convert(target='MESH')
 
-bpy.ops.object.camera_add(location=(-55,-91,43))
+bpy.ops.object.camera_add(location=(-121,-145,77))
 cam=bpy.context.object
 cam.name='Camera / photographed facade overview'
-cam.rotation_euler=(Vector((0,-2,7))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.rotation_euler=(Vector((-33,-3,7))-cam.location).to_track_quat('-Z','Y').to_euler()
 cam.data.type='ORTHO'
-cam.data.ortho_scale=88
+cam.data.ortho_scale=164
 bpy.context.scene.camera=cam
-bpy.ops.object.light_add(type='AREA',location=(-25,-35,60))
-bpy.context.object.data.energy=50000
+bpy.ops.object.light_add(type='AREA',location=(-45,-35,65))
+bpy.context.object.data.energy=80000
 bpy.context.object.data.shape='DISK'
 bpy.context.object.data.size=42
 bpy.ops.object.light_add(type='SUN',location=(0,0,30))
@@ -412,7 +585,7 @@ world.use_nodes=True
 world.node_tree.nodes['Background'].inputs[0].default_value=(.65,.75,.9,1)
 world.node_tree.nodes['Background'].inputs[1].default_value=.5
 scene.render.engine='CYCLES'
-scene.cycles.samples=24
+scene.cycles.samples=16
 scene.cycles.use_denoising=True
 scene.render.resolution_x=1600
 scene.render.resolution_y=1000
@@ -420,13 +593,23 @@ scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX'
 scene.render.image_settings.file_format='PNG'
 scene.render.filepath=str(ROOT/'building-preview.png')
-scene['reference_note']='Exterior approximation from a single supplied photo. Hidden geometry and all dimensions inferred. Vehicles are simplified props; no people reconstructed.'
+scene['reference_note']='Three user photos: original right wing plus two bridge photographs. Added left wing, central upper entrance, pedestrian bridge and switchback stair. Unseen elevations, dimensions and stair arrangement are inferred; not a survey model.'
 bpy.ops.object.select_all(action='DESELECT')
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','estimatedDimensionsMeters':{'frontage':67.5,'mainDepth':12,'mainHeight':16.7},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
+
+# Additional close-up for reviewing the photographed pedestrian access.
+cam.location=(-54,-44,18)
+cam.rotation_euler=(Vector((-34,-16,5.5))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=36
+scene.render.resolution_x=1280
+scene.render.resolution_y=960
+scene.render.filepath=str(ROOT/'bridge-preview.png')
+bpy.ops.render.render(write_still=True)
+print('BRIDGE_RENDERED',flush=True)

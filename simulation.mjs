@@ -26,7 +26,7 @@ export function polyline(points,progress){
 export function sample(time){
   const t=clamp(time,0,TOTAL),done=t>=TOTAL,phase=PHASES.find(p=>t<p.end)||PHASES.at(-1),u=clamp((t-phase.start)/phase.duration);
   let truck={x:DOCK_X,z:12.2,yaw:0,distance:0};
-  if(phase.id==='arrive')truck=polyline([[-34,23],[-12,23],[-2,20],[DOCK_X,20],[DOCK_X,23]],smooth(u));
+  if(phase.id==='arrive')truck=polyline([[-24,24],[-12,24],[-2,20],[DOCK_X,20],[DOCK_X,23]],smooth(u));
   else if(phase.id==='reverse'){truck.z=lerp(23,12.2,smooth(u));truck.distance=23-truck.z}
   else if(phase.id==='depart')truck=polyline([[DOCK_X,12.2],[DOCK_X,20],[10,24],[34,24]],smooth(u));
   const doors=t<19?0:t<22?smooth((t-19)/3):t<65?1:t<68?1-smooth((t-65)/3):0;

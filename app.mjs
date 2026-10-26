@@ -11,7 +11,7 @@ const optionNumber=(name,fallback,min,max)=>{const value=params.get(name);const 
 const $=s=>document.querySelector(s),container=$('#scene');
 let renderer,ready=false,playing=false,time=0,last=performance.now(),speed=1,lastTitle='';
 const scene=new THREE.Scene();
-const camera=new THREE.PerspectiveCamera(40,1,.1,400);
+const camera=new THREE.PerspectiveCamera(40,1,.1,700);
 let controls,dockLabel,lighting;
 let lightHour=12,targetHour=12;
 const truck=new THREE.Group(),conveyor=new THREE.Group();
@@ -64,7 +64,7 @@ function zone(x,z,w,d,color){
 }
 function setupScene(){
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;container.appendChild(renderer.domElement);renderer.domElement.setAttribute('aria-label','三维物流场院：货车、伸缩传送带与入线纸箱');
-  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2-.025;controls.minDistance=12;controls.maxDistance=160;
+  controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.maxPolarAngle=Math.PI/2-.025;controls.minDistance=12;controls.maxDistance=360;
   lighting=createLighting(scene,renderer,$('#stage'));
   const pmrem=new THREE.PMREMGenerator(renderer),room=new RoomEnvironment();scene.environment=pmrem.fromScene(room,.04).texture;scene.environmentIntensity=.65;room.dispose();pmrem.dispose();
   const ground=new THREE.Mesh(new THREE.PlaneGeometry(500,500),new THREE.ShadowMaterial({opacity:.14}));ground.rotation.x=-Math.PI/2;ground.position.y=-.45;ground.receiveShadow=true;scene.add(ground);
@@ -77,7 +77,7 @@ function setView(view){
   if(!controls)return;
   const aspect=container.clientWidth/container.clientHeight,t=sample(time).truck;
   const offset=new THREE.Vector3(-8,4.8,10).applyAxisAngle(new THREE.Vector3(0,1,0),t.yaw);
-  const presets={overview:{pos:aspect<1?[-82,80,135]:[-53,44,83],target:[0,6,7]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[0,112,15],target:[0,0,7]}};
+  const presets={overview:{pos:aspect<1?[-165,145,265]:[-115,77,160],target:[-33,6,7]},right:{pos:[-53,44,83],target:[0,6,7]},left:{pos:[-111,32,68],target:[-66,7,6]},bridge:{pos:[-53,17,41],target:[-35.3,5.2,16]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[-33,215,16],target:[-33,0,7]}};
   if(view==='equipment')$('#cutaway').checked=true;
   if(view==='truck')$('#cutaway').checked=false;
   if(dockLabel)dockLabel.visible=!embedded&&['overview','top'].includes(view);
@@ -144,7 +144,7 @@ try{
     playing=params.get('autoplay')!=='0';$('#loop').checked=params.get('loop')!=='0';
     $('#auto-light').checked=params.get('autoLight')==='1';
     controls.enabled=params.get('interactive')!=='0';
-    const view=params.get('view');setView(['overview','dock','truck','equipment','top'].includes(view)?view:'overview');
+    const view=params.get('view');setView(['overview','right','left','bridge','dock','truck','equipment','top'].includes(view)?view:'overview');
     syncLightUI();
   }
   lighting.setHour(lightHour);renderState();requestAnimationFrame(frame);

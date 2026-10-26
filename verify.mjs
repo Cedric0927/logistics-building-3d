@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 
 const files=['index.html','building.html','app.mjs','simulation.mjs','simulation.test.mjs','simulation.css','serve.mjs','package.json','logistics-building.glb','logistics-building.blend','reference.jpg','building-preview.png','building-info.json','create-building.py','facade-tiles.png','glass-reflection.png','vendor/model-viewer.min.js','vendor/LICENSE-model-viewer'];
 const root=new URL('.',import.meta.url);
-files.push('preview.html','embed-example.html','lighting.mjs','light-cycle.mjs','lighting.test.mjs','create-equipment.py','refined-equipment.blend','refined-equipment.glb','equipment-preview.png','equipment-info.json');
+files.push('bridge-preview.png','reference-right-bridge.jpg','reference-left-bridge.jpg','bridge-pavers.png','preview.html','embed-example.html','lighting.mjs','light-cycle.mjs','lighting.test.mjs','create-equipment.py','refined-equipment.blend','refined-equipment.glb','equipment-preview.png','equipment-info.json');
 async function collect(dir){for(const entry of await readdir(new URL(dir,root),{withFileTypes:true})){const name=dir+'/'+entry.name;if(entry.isDirectory())await collect(name);else files.push(name)}}
 await collect('vendor/three');
 const hashes={};
@@ -25,6 +25,8 @@ assert.equal(glb.readUInt32LE(4),2);
 assert.equal(glb.readUInt32LE(8),glb.length);
 const json=JSON.parse(glb.toString('utf8',20,20+glb.readUInt32LE(12)));
 assert(json.meshes.length>0,'No meshes found');
+for(const part of ['LeftWing / upper storeys','Center / rounded entrance tower','Center / entry door glazing','Bridge / structural deck','Stairs / concrete treads','Stairs / return landing'])assert(json.nodes.some(n=>n.name.replaceAll('_',' ').includes(part)), 'Missing campus component: '+part);
+
 assert(json.images.length>0,'No textures found');
 for(const image of json.images)assert(Number.isInteger(image.bufferView)&&!image.uri,'Texture must be embedded');
 for(const buffer of json.buffers)assert(!buffer.uri,'Buffer must be embedded');

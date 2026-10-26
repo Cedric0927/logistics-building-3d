@@ -6,7 +6,7 @@ export function createLighting(scene,renderer,stage){
   const artificial=[],emissions=[],windows=[],lightMaterials=new Set();
   const hemisphere=new THREE.HemisphereLight(0xf6faff,0xbab09a,3);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff6df,3.2);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
-  Object.assign(sun.shadow.camera,{left:-50,right:50,top:45,bottom:-45,near:1,far:150});sun.shadow.bias=-.0002;sun.shadow.normalBias=.035;sun.target.position.set(0,0,4);scene.add(sun,sun.target);
+  Object.assign(sun.shadow.camera,{left:-95,right:95,top:75,bottom:-75,near:1,far:250});sun.shadow.bias=-.0002;sun.shadow.normalBias=.035;sun.target.position.set(-33,0,4);scene.add(sun,sun.target);
   const ambient=new THREE.AmbientLight(0xffffff,.3),moon=new THREE.DirectionalLight(0x9db9ed,0);moon.position.set(22,45,-16);scene.add(ambient,moon);
   const steel=new THREE.MeshStandardMaterial({color:0x39464c,metalness:.65,roughness:.42});
   function body(size,pos,material,parent=fixtures){const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
@@ -17,13 +17,22 @@ export function createLighting(scene,renderer,stage){
     const x=-25.3+i*4.42;body([2.4,.09,.19],[x,4.28,7.83],steel);glow([2.22,.025,.15],[x,4.225,7.83],0xffdda2);
     if(i%2===0){const p=powered(new THREE.PointLight(0xffddac,0,13,2),85);p.position.set(x,4.0,7.8);fixtures.add(p)}
   }
+  // Matching left-wing dock lamps and central bridge entrance.
+  for(let i=0;i<12;i++){
+    const x=-89.8+i*4.42;body([2.4,.09,.19],[x,4.28,7.83],steel);glow([2.22,.025,.15],[x,4.225,7.83],0xffdda2);
+    if(i%4===1){const p=powered(new THREE.PointLight(0xffddac,0,21,2),140);p.position.set(x,4,7.8);fixtures.add(p)}
+  }
+  for(const z of [9,20]){
+    glow([.65,.08,.20],[-33,4.40,z],0xffdda2);
+    const p=powered(new THREE.PointLight(0xffe0b8,0,10,2),45);p.position.set(-33,6.6,z);fixtures.add(p);
+  }
   // Two yard lights, mounted on real poles with broad downward beams.
   for(const side of [-1,1]){
-    const x=side*33,z=23;
+    const x=side<0?-101:33,z=23;
     const pole=new THREE.Mesh(new THREE.CylinderGeometry(.075,.13,10.8,10),steel);pole.position.set(x,5.4,z);pole.castShadow=true;fixtures.add(pole);
     body([.55,.12,.55],[x,.08,z],steel);body([2,.10,.12],[x-side*.9,10.8,z],steel);
     body([1.15,.17,.65],[x-side*1.7,10.75,z],steel);glow([.96,.025,.49],[x-side*1.7,10.65,z],0xffebc6);
-    const spot=powered(new THREE.SpotLight(0xffebcc,0,43,.85,.68,2),500);spot.position.set(x-side*1.7,10.57,z);spot.target.position.set(side*19,0,12);fixtures.add(spot,spot.target);
+    const spot=powered(new THREE.SpotLight(0xffebcc,0,43,.85,.68,2),500);spot.position.set(x-side*1.7,10.57,z);spot.target.position.set(side<0?-83:19,0,12);fixtures.add(spot,spot.target);
   }
   // Selected office windows: glass remains behind the original blue frames.
   const canvas=document.createElement('canvas');canvas.width=64;canvas.height=128;
@@ -32,6 +41,9 @@ export function createLighting(scene,renderer,stage){
   const winMat=new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0,depthWrite:false});
   for(const [row,y] of [6.6,10.05,13.5].entries())for(let col=0;col<13;col++)if((col+row*2)%3===0){
     const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.52,1.88),winMat);pane.position.set(-24.8+col*4.13,y,6.182);fixtures.add(pane);windows.push(pane);
+  }
+  for(const [row,y] of [6.6,10.05,13.5].entries())for(let col=0;col<13;col++)if((col+row*2)%3===0){
+    const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.52,1.88),winMat);pane.position.set(-89.3+col*4.13,y,6.182);fixtures.add(pane);windows.push(pane);
   }
   let lastHour=NaN;
   function bindTruck(root){
@@ -47,7 +59,7 @@ export function createLighting(scene,renderer,stage){
   function setHour(hour){
     if(Number.isFinite(lastHour)&&Math.abs(hour-lastHour)<.0001)return;
     lastHour=hour;const p=lightingProfile(hour),theta=(p.hour-6)*Math.PI/12;
-    sun.position.set(Math.cos(theta)*55,Math.sin(theta)*60,28);sun.intensity=p.sun;sun.color.set(p.sunColor);
+    sun.position.set(-33+Math.cos(theta)*85,Math.sin(theta)*95,50);sun.intensity=p.sun;sun.color.set(p.sunColor);
     hemisphere.intensity=p.sky;hemisphere.color.set(0xf6faff).lerp(new THREE.Color(0x9fbbe8),p.lamps);hemisphere.groundColor.set(0xbab09a).lerp(new THREE.Color(0x394454),p.lamps);
     ambient.intensity=p.ambient;moon.intensity=.28*p.lamps;scene.environmentIntensity=p.environment;
     for(const {light,power} of artificial)light.intensity=power*p.lamps;

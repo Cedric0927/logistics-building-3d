@@ -44,3 +44,12 @@ test('cartons move inward along belt and rewinding restores full cargo',()=>{
   assert.equal(sample(-10).time,0);
   assert.equal(sample(TOTAL+10).time,TOTAL);
 });
+
+test('truck footprint clears the central bridge and stair envelope',()=>{
+  // Bridge occupies x <= -30.84. Include the complete rotating 9m box truck footprint.
+  for(let t=0;t<=TOTAL;t+=.05){
+    const {truck}=sample(t);
+    const halfX=Math.abs(Math.cos(truck.yaw))*1.27+Math.abs(Math.sin(truck.yaw))*4.5;
+    assert(truck.x-halfX> -30.84,'Truck intersects pedestrian bridge at '+t);
+  }
+});
