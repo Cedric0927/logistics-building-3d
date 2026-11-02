@@ -149,7 +149,7 @@ FONT = bpy.data.fonts.load(str(font_path)) if font_path else None
 
 # Estimated main envelope: 64 m frontage, four storeys, a 12 m deep wing.
 # Front faces negative Y. Rear and end elevations below are deliberately simplified.
-box('Site / foundation', (-33,-8,-.22), (145,43,.42), GROUND)
+box('Site / foundation', (-25.25,21.5,-.22), (160.5,102,.42), GROUND)
 box('Main / upper three storeys', (-1,0,10.30), (53,12,11.6), TILE)
 box('Main / loading hall back wall', (-1,4.2,2.15), (53,3.6,4.3), ROOF)
 box('Main / loading platform', (-1,-2.15,.31), (53,9,.6), ROOF)
@@ -468,7 +468,7 @@ box('Bridge / structural deck',(-33,-15.5,DECK-.17),(4.4,15,.34),ROOF)
 box('Bridge / diamond walkway',(-33,-15.5,DECK+.016),(4.3,15,.03),PAVER)
 for y in (-10.5,-16.5,-22.8):
     for x in (-34.85,-31.15):
-        box('Bridge / concrete support piers',(x,y,2.19),(.40,.45,4.38),TILE)
+        box('Bridge / concrete support piers',(x,y,2.19),(.55,.60,4.38),TILE)
     box('Bridge / cross beams',(-33,y,4.35),(4.5,.48,.34),ROOF)
 for x in (-35.12,-30.88):
     box('Bridge / edge stringers',(x,-15.5,4.40),(.15,15,.25),DARK)
@@ -529,6 +529,153 @@ for x in (-43,-39):
         box('Stairs / bollard bands',(x,-25,z),(.34,.34,.14),DARK)
 
 
+# Ground-level bridge structure and rear transfer hall, from the two new photos.
+# Blender coordinates: front yard negative Y; transfer hall extends behind office to +Y.
+SHEET=mat('Transfer hall blue-gray corrugated steel',(.46,.61,.68),.52,.35)
+RIB=mat('Transfer hall raised seams',(.59,.70,.74),.46,.48)
+BASEBLUE=mat('Blue-gray lower wall band',(.13,.25,.30),.8)
+ASPHALT=mat('Repaired asphalt patches',(.26,.28,.28),.97)
+FENCE=mat('Green galvanized security fencing',(.09,.22,.19),.55,.48)
+WIRE=mat('Silver security wire',(.43,.51,.51),.35,.65)
+
+# Office east elevation: narrow corner windows and three-light grouped windows.
+def east_window(name,y,z,w,h,panes):
+    box(name+' / recess',(34.535,y,z),(.08,w+.18,h+.18),DARK)
+    box(name+' / glazing',(34.585,y,z),(.045,w,h),GLASS)
+    for i in range(panes+1):
+        yy=y-w/2+w*i/panes
+        box(name+' / blue mullions',(34.65,yy,z),(.13,.075,h+.1),BLUE)
+    for dz in (-h/2,h/2,-.20):
+        box(name+' / blue transoms',(34.66,y,z+dz),(.14,w+.08,.075),BLUE)
+    box(name+' / sill',(34.70,y,z-h/2-.09),(.28,w+.23,.09),METAL)
+for z in (6.6,10.05,13.5):
+    east_window('RightSide / narrow corner windows',-3.8,z,.95,1.85,1)
+    east_window('RightSide / grouped office windows',2.05,z,3.15,1.85,3)
+box('RightSide / blue plinth',(34.56,-.8,.47),(.12,10.1,.9),BASEBLUE)
+for y in (-4.8,5.3):
+    tube('RightSide / service downpipes',(34.73,y,.6),(34.73,y,16.35),.048,METAL,8)
+for z in (8.3,11.75):
+    box('RightSide / floor joints',(34.57,-.6,z),(.07,10.8,.065),ROOF)
+# Photographed blue-green entrance canopy and arched trim.
+box('Right / projecting blue entrance canopy',(29.5,-8.62,3.95),(5.35,1.8,.30),BLUE)
+box('Right / canopy silver cap',(29.5,-8.62,4.12),(5.45,1.9,.06),METAL)
+for i in range(24):
+    a=math.pi*i/24;b=math.pi*(i+1)/24
+    tube('Right / arched entrance pediment',(29.5+1.9*math.cos(a),-8.02,4.17+.75*math.sin(a)),(29.5+1.9*math.cos(b),-8.02,4.17+.75*math.sin(b)),.10,TILE,8)
+
+# Rear transfer hall envelope: approximate 127x54m; exterior only, no inferred machinery.
+box('Warehouse / lower wall base',(-31.5,33,1.42),(127,54,2.84),ROOF)
+box('Warehouse / corrugated upper shell',(-31.5,33,8.16),(127,54,10.65),SHEET)
+box('Warehouse / blue plinth',(-31.5,33,.54),(127.15,54.15,1.05),BASEBLUE)
+for i in range(154):
+    y=6.25+i*.35
+    box('Warehouse / east vertical sheet seams',(32.035,y,8.23),(.075,.032,10.53),RIB)
+    box('Warehouse / west vertical sheet seams',(-95.035,y,8.23),(.075,.032,10.53),RIB)
+for i in range(363):
+    x=-94.85+i*.35
+    for y in (5.965,60.035):
+        box('Warehouse / end wall sheet seams',(x,y,8.23),(.032,.075,10.53),RIB)
+# Sloped eave closure joins the upper wall to the low-pitch roof.
+poly('Warehouse / eave closure',SHEET,[(-95,6,13.46),(32,6,13.46),(32,60,13.46),(-95,60,13.46),(-95,6,14),(32,6,14),(32,60,13.55),(-95,60,13.55)],[(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7)])
+# Low-pitch roof; actual structural spans and unphotographed rear are provisional.
+poly('Warehouse / low pitch roof',RIB,[(-95.25,5.8,14.0),(32.25,5.8,14.0),(32.25,60.2,13.55),(-95.25,60.2,13.55)],[(0,1,2,3)])
+for i in range(128):
+    x=-95+i
+    tube('Warehouse / roof standing seams',(x,5.8,14.035),(x,60.2,13.585),.022,METAL,5)
+for y,z in ((5.8,13.97),(60.2,13.52)):
+    box('Warehouse / roof edge fascia',(-31.5,y,z),(127.5,.22,.25),RIB)
+for x in (-95.17,32.17):
+    tube('Warehouse / side roof edge',(x,5.8,14.0),(x,60.2,13.55),.09,METAL,8)
+# High strip glazing on the photographed east elevation.
+box('Warehouse / east clerestory recess',(32.10,31.6,11.25),(.09,43.3,1.76),DARK)
+box('Warehouse / east clerestory glazing',(32.165,31.6,11.25),(.045,43.1,1.60),GLASS)
+for i in range(41):
+    y=10.05+i*1.075
+    box('Warehouse / high window mullions',(32.225,y,11.25),(.13,.055,1.72),RIB)
+for z in (10.40,11.25,12.10):
+    box('Warehouse / high window transoms',(32.23,31.6,z),(.14,43.3,.065),RIB)
+for y in (16.0,38.6):
+    box('Warehouse / high ventilation openings',(32.24,y,11.25),(.04,2.05,1.58),GLASS_DARK)
+    for yy in (y-.75,y-.25,y+.25,y+.75):
+        box('Warehouse / vent louvers',(32.28,yy,11.25),(.06,.065,1.55),DARK)
+for y in (9,22,35,48,58):
+    tube('Warehouse / rainwater pipes',(32.34,y,.5),(32.34,y,13.65),.07,METAL,8)
+# Long east-side canopy and conspicuous diagonal wall stays.
+box('Warehouse / east service canopy',(33.9,33.5,4.28),(3.8,43,.14),METAL)
+box('Warehouse / canopy blue fascia',(35.82,33.5,4.12),(.15,43.2,.3),BLUE)
+for y in range(13,55,5):
+    tube('Warehouse / diagonal canopy stays',(32.25,y,6.35),(35.6,y,4.42),.055,DARK,8)
+for y in (15,28,41,53):
+    box('Warehouse / canopy outer columns',(35.55,y,2.08),(.18,.18,4.16),METAL)
+for i in range(58):
+    box('Warehouse / canopy roof seams',(33.9,12.5+i*.74,4.38),(3.65,.025,.04),ROOF)
+# Side SF sign, modeled lettering rather than a guessed photo texture.
+text('Warehouse / SF side sign','SF EXPRESS',(32.30,44.2,8.65),.95,DARK,rotation=(math.pi/2,0,math.pi/2))
+text('Warehouse / Chinese side sign','顺丰速运' if FONT else 'TRANSFER HALL',(32.32,44.2,7.68),.54,DARK,rotation=(math.pi/2,0,math.pi/2),font=FONT)
+
+# Bridge pier pads, longitudinal beam flanges and a ground-service enclosure.
+for y in (-10.5,-16.5,-22.8):
+    for x in (-34.85,-31.15):
+        box('Bridge / pier foundation pads',(x,y,.11),(1.0,1.05,.22),ROOF)
+        box('Bridge / pier caps',(x,y,4.29),(.82,.85,.25),ROOF)
+for x in (-34.70,-31.30):
+    box('Bridge / steel longitudinal beam webs',(x,-15.5,4.14),(.10,14.8,.38),DARK)
+    for z in (3.94,4.34):
+        box('Bridge / longitudinal beam flanges',(x,-15.5,z),(.28,14.8,.055),METAL)
+box('Bridge / ground service enclosure',(-33.05,-10.5,1.32),(3.0,3.25,2.64),TILE)
+box('Bridge / service enclosure door',(-33.05,-12.16,1.15),(1.2,.08,2.2),GLASS_DARK)
+box('Bridge / service enclosure coping',(-33.05,-10.5,2.72),(3.15,3.4,.16),METAL)
+
+# Right-side circulation yard: drainage channel, crossing and separated parking bays.
+for y in range(-20,60,7):
+    box('EastYard / parking stripes',(43.0,y,.016),(7.8,.09,.025),LINE)
+box('EastYard / lane edge',(38,-.5,.016),(.09,54,.025),LINE)
+box('EastYard / drainage channel',(36.7,20,.015),(.32,80,.028),DARK)
+for i in range(190):
+    box('EastYard / drain grate bars',(36.7,-19.8+i*.42,.036),(.34,.048,.025),METAL)
+for i in range(11):
+    box('EastYard / pedestrian crossing',(43,-15+i*.70,.022),(5.0,.30,.026),LINE)
+for y in (0,20,40,57):
+    box('EastYard / yellow protection blocks',(37.3,y,.42),(.60,1.1,.84),YELLOW)
+    box('EastYard / black protection bands',(37.3,y,.45),(.62,1.12,.22),DARK)
+# Local pavement repairs visible from the ground; kept low contrast.
+for x,y,w,d in ((42,-21,4.2,1.1),(46,-6,3,1.8),(40,46,2.8,2.1)):
+    box('EastYard / repaired paving',(x,y,.012),(w,d,.018),ASPHALT)
+
+# Photographed welded mesh fence and coiled wire along the east service yard.
+for y in range(-20,67,4):
+    tube('Security / east fence posts',(50,y,.05),(50,y,2.65),.055,FENCE,8)
+    tube('Security / inclined post tops',(50,y,2.55),(50.28,y,3.10),.035,FENCE,6)
+    box('Security / red post caps',(50,y,2.70),(.13,.13,.10),RED)
+for z in (.15,1.30,2.50):
+    tube('Security / east horizontal rails',(50,-20,z),(50,64,z),.025,FENCE,6)
+for i in range(384):
+    y=-20+i*.22
+    tube('Security / welded mesh uprights',(50,y,.15),(50,y,2.50),.009,FENCE,5)
+for i in range(14):
+    z=.18+i*.175
+    tube('Security / welded mesh horizontal wires',(50,-20,z),(50,64,z),.008,FENCE,5)
+for i in range(1260):
+    a=i*math.tau/18;b=(i+1)*math.tau/18
+    y=-20+i/15
+    tube('Security / coiled top wire',(50+.34*math.cos(a),y,2.90+.34*math.sin(a)),(50+.34*math.cos(b),y+1/15,2.90+.34*math.sin(b)),.012,WIRE,5)
+# Guardrails and warning blocks at the yard entrance, leaving the animated truck lane clear.
+for x in (40,49):
+    box('Security / entrance yellow blocks',(x,-24,.48),(1.0,.65,.96),YELLOW)
+    for z in (.28,.65):
+        box('Security / entrance black bands',(x,-24,z),(1.03,.68,.18),DARK)
+handrail('Security / low entry guardrail',(40.6,-24,.04),(48.4,-24,.04))
+
+
+# Small planted containers visible along the service-yard boundary.
+LEAF=mat('Service yard shrub foliage',(.18,.31,.13),.95)
+for i,y in enumerate((0,9,19,32,45)):
+    box('EastYard / concrete planters',(48.3,y,.36),(1.45,2.2,.72),ROOF)
+    for j in (-1,1):
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=1,location=(48.3,y+j*.47,1.22))
+        shrub=bpy.context.object;shrub.name='EastYard / planted shrub '+str(i)+' '+str(j)
+        shrub.scale=(.62,.77,.83);shrub.data.materials.append(materials[LEAF])
+
 # Build batched, named meshes. World-space planar UVs keep tile density consistent.
 for (name,material),(verts,faces) in geometry.items():
     mesh=bpy.data.meshes.new(name)
@@ -565,12 +712,12 @@ for obj in list(bpy.context.scene.objects):
         bpy.context.view_layer.objects.active=obj
         bpy.ops.object.convert(target='MESH')
 
-bpy.ops.object.camera_add(location=(-121,-145,77))
+bpy.ops.object.camera_add(location=(-135,-157,114))
 cam=bpy.context.object
 cam.name='Camera / photographed facade overview'
-cam.rotation_euler=(Vector((-33,-3,7))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.rotation_euler=(Vector((-28,16,6))-cam.location).to_track_quat('-Z','Y').to_euler()
 cam.data.type='ORTHO'
-cam.data.ortho_scale=164
+cam.data.ortho_scale=187
 bpy.context.scene.camera=cam
 bpy.ops.object.light_add(type='AREA',location=(-45,-35,65))
 bpy.context.object.data.energy=80000
@@ -593,13 +740,13 @@ scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX'
 scene.render.image_settings.file_format='PNG'
 scene.render.filepath=str(ROOT/'building-preview.png')
-scene['reference_note']='Three user photos: original right wing plus two bridge photographs. Added left wing, central upper entrance, pedestrian bridge and switchback stair. Unseen elevations, dimensions and stair arrangement are inferred; not a survey model.'
+scene['reference_note']='Five user photos: office wings and bridge, ground bridge and east side. Added east office windows, rear corrugated transfer hall, side canopy and security fencing. Rear hall extent, roof and hidden elevations inferred; not a survey model.'
 bpy.ops.object.select_all(action='DESELECT')
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
@@ -613,3 +760,12 @@ scene.render.resolution_y=960
 scene.render.filepath=str(ROOT/'bridge-preview.png')
 bpy.ops.render.render(write_still=True)
 print('BRIDGE_RENDERED',flush=True)
+
+cam.location=(89,-21,36)
+cam.rotation_euler=(Vector((22,26,8))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=83
+scene.render.resolution_x=1440
+scene.render.resolution_y=1000
+scene.render.filepath=str(ROOT/'warehouse-preview.png')
+bpy.ops.render.render(write_still=True)
+print('WAREHOUSE_RENDERED',flush=True)

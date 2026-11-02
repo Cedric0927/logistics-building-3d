@@ -6,7 +6,7 @@ export function createLighting(scene,renderer,stage){
   const artificial=[],emissions=[],windows=[],lightMaterials=new Set();
   const hemisphere=new THREE.HemisphereLight(0xf6faff,0xbab09a,3);scene.add(hemisphere);
   const sun=new THREE.DirectionalLight(0xfff6df,3.2);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
-  Object.assign(sun.shadow.camera,{left:-95,right:95,top:75,bottom:-75,near:1,far:250});sun.shadow.bias=-.0002;sun.shadow.normalBias=.035;sun.target.position.set(-33,0,4);scene.add(sun,sun.target);
+  Object.assign(sun.shadow.camera,{left:-110,right:110,top:100,bottom:-100,near:1,far:300});sun.shadow.bias=-.0002;sun.shadow.normalBias=.035;sun.target.position.set(-27,0,-16);scene.add(sun,sun.target);
   const ambient=new THREE.AmbientLight(0xffffff,.3),moon=new THREE.DirectionalLight(0x9db9ed,0);moon.position.set(22,45,-16);scene.add(ambient,moon);
   const steel=new THREE.MeshStandardMaterial({color:0x39464c,metalness:.65,roughness:.42});
   function body(size,pos,material,parent=fixtures){const m=new THREE.Mesh(new THREE.BoxGeometry(...size),material);m.position.set(...pos);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m}
@@ -44,6 +44,11 @@ export function createLighting(scene,renderer,stage){
   }
   for(const [row,y] of [6.6,10.05,13.5].entries())for(let col=0;col<13;col++)if((col+row*2)%3===0){
     const pane=new THREE.Mesh(new THREE.PlaneGeometry(1.52,1.88),winMat);pane.position.set(-89.3+col*4.13,y,6.182);fixtures.add(pane);windows.push(pane);
+  }
+  // Lights beneath the east transfer-hall canopy.
+  for(const z of [-17,-34,-51]){
+    body([.25,.08,2.6],[34.1,4.14,z],steel);glow([.19,.025,2.4],[34.1,4.085,z],0xffdda2);
+    const p=powered(new THREE.PointLight(0xffe0b8,0,16,2),85);p.position.set(34.3,3.9,z);fixtures.add(p);
   }
   let lastHour=NaN;
   function bindTruck(root){

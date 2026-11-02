@@ -53,3 +53,12 @@ test('truck footprint clears the central bridge and stair envelope',()=>{
     assert(truck.x-halfX> -30.84,'Truck intersects pedestrian bridge at '+t);
   }
 });
+
+test('departing truck clears new east-yard entrance barriers',()=>{
+  // The nearest yellow block begins at x=39.5; check full truck body at every phase.
+  for(let t=0;t<=TOTAL;t+=.05){
+    const {truck}=sample(t);
+    const halfX=Math.abs(Math.cos(truck.yaw))*1.5+Math.abs(Math.sin(truck.yaw))*4.6;
+    assert(truck.x+halfX<39.5,'Truck intersects east-yard entrance at '+t);
+  }
+});

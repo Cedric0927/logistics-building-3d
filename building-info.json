@@ -1,11 +1,13 @@
 {
-  "meshObjects": 358,
-  "triangles": 160626,
-  "glbBytes": 8093228,
+  "meshObjects": 436,
+  "triangles": 215608,
+  "glbBytes": 11706564,
   "sourcePhoto": "reference.jpg",
   "additionalPhotos": [
     "reference-right-bridge.jpg",
-    "reference-left-bridge.jpg"
+    "reference-left-bridge.jpg",
+    "reference-ground-bridge.jpg",
+    "reference-right-warehouse.jpg"
   ],
   "bridgeDeckMeters": 4.7,
   "stairRisers": 28,
@@ -13,7 +15,10 @@
   "estimatedDimensionsMeters": {
     "frontage": 135,
     "mainDepth": 12,
-    "mainHeight": 16.7
+    "mainHeight": 16.7,
+    "rearHallWidth": 127,
+    "rearHallDepth": 54,
+    "rearHallHeight": 14
   },
   "accuracy": "Photo-guided approximation; unobserved sides and dimensions inferred."
 }

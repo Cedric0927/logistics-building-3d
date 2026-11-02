@@ -75,9 +75,10 @@ function setupScene(){
 function resize(){if(!renderer)return;const w=container.clientWidth,h=container.clientHeight;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
 function setView(view){
   if(!controls)return;
+  controls.maxPolarAngle=view==='ground'?Math.PI/2+.08:Math.PI/2-.025;
   const aspect=container.clientWidth/container.clientHeight,t=sample(time).truck;
   const offset=new THREE.Vector3(-8,4.8,10).applyAxisAngle(new THREE.Vector3(0,1,0),t.yaw);
-  const presets={overview:{pos:aspect<1?[-165,145,265]:[-115,77,160],target:[-33,6,7]},right:{pos:[-53,44,83],target:[0,6,7]},left:{pos:[-111,32,68],target:[-66,7,6]},bridge:{pos:[-53,17,41],target:[-35.3,5.2,16]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[-33,215,16],target:[-33,0,7]}};
+  const presets={overview:{pos:aspect<1?[-170,170,285]:[-135,108,177],target:[-27,6,-15]},right:{pos:[-53,44,83],target:[0,6,7]},left:{pos:[-111,32,68],target:[-66,7,6]},bridge:{pos:[-53,17,41],target:[-35.3,5.2,16]},ground:{pos:[42,2.9,29],target:[-23,5,8]},warehouse:{pos:[84,28,9],target:[19,7,-24]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[-27,245,-13],target:[-27,0,-13]}};
   if(view==='equipment')$('#cutaway').checked=true;
   if(view==='truck')$('#cutaway').checked=false;
   if(dockLabel)dockLabel.visible=!embedded&&['overview','top'].includes(view);
@@ -144,7 +145,7 @@ try{
     playing=params.get('autoplay')!=='0';$('#loop').checked=params.get('loop')!=='0';
     $('#auto-light').checked=params.get('autoLight')==='1';
     controls.enabled=params.get('interactive')!=='0';
-    const view=params.get('view');setView(['overview','right','left','bridge','dock','truck','equipment','top'].includes(view)?view:'overview');
+    const view=params.get('view');setView(['overview','right','left','bridge','ground','warehouse','dock','truck','equipment','top'].includes(view)?view:'overview');
     syncLightUI();
   }
   lighting.setHour(lightHour);renderState();requestAnimationFrame(frame);

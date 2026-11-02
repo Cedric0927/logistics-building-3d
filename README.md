@@ -1,12 +1,26 @@
 # 物流站 · 建筑外观与装卸作业模拟
 
-根据原始建筑照片和两张天桥照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
+根据原始建筑照片及后续四张现场照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
 
 货车已按用户提供的顺丰实车照片精修：黑色厢式车身、导流罩、倾斜风挡、竖向灯组、轮胎纹路、轮毂螺母、门锁五金，以及 SF / 顺丰速运 / SF EXPRESS 标识、红色横线与反光条。传送带包含滚筒、三级套接框架、驱动电机、调平支脚、急停及控制盒。
 
 ![精修货车与传送带](equipment-preview.png)
 
 ![建筑模型预览](building-preview.png)
+
+## 新增右侧与后方中转库房
+
+按新提供的地面天桥照与办公楼东侧照继续补建：
+
+- 办公楼右侧单列窄窗、三联窗、窗台、落水管、蓝灰色墙脚，以及前门的弧形装饰和蓝色雨棚。
+- 办公楼后方中转库房：约 127×54 米的暂定外壳、竖向金属板接缝、高位连续条窗、局部通风口、低坡屋面、侧面 SF 字样、长雨棚和斜拉撑。
+- 天桥墩基础、墩帽与纵梁，补充桥下地面附属构件。两张新照片仍未完整显示楼梯下段，因此暂时保留上一版折返形式。
+- 右侧场地的网片围栏、顶部盘绕铁丝、红色柱帽、黄黑隔离墩、低护栏、排水沟、人行标线和少量绿植。
+- 开发界面新增“地面看天桥”“右侧与后库”视角，全楼总览与俯视范围同时扩大。右侧库房雨棚灯接入昼夜系统，保留原有货车装卸演示。
+
+新参考照片为 `reference-ground-bridge.jpg` 与 `reference-right-warehouse.jpg`。侧面照片能确认可见外墙特征；库房总宽、总进深、低坡屋顶和未拍到的后墙均为临时推定。未重建内部设备、人物或无法辨认的告示文字，后续按新照片继续调整。
+
+![办公楼右侧与后方中转库房](warehouse-preview.png)
 
 ## 新增左侧楼翼与中间天桥
 
@@ -81,7 +95,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `loop` | `1` | 0 为只播放一轮 |
 | `time` | `0` | 初始作业秒数，0–80；40 为卸货阶段 |
 | `speed` | `1` | 作业速度，0.25–4 |
-| `view` | `overview` | overview / right / left / bridge / dock / truck / equipment / top |
+| `view` | `overview` | overview / right / left / bridge / ground / warehouse / dock / truck / equipment / top |
 | `autoLight` | `0` | 1 开启自动昼夜 |
 | `interactive` | `1` | 0 禁止鼠标操作，仅播放画面 |
 
@@ -103,7 +117,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `create-equipment.py` | Blender 精修设备生成脚本 |
 | `equipment-preview.png` / `equipment-info.json` | 设备渲染及规模说明 |
 | `building.html` | 原始静态建筑查看器 |
-| `logistics-building.glb` | 约 8.1 MB 的网页模型，内嵌贴图 |
+| `logistics-building.glb` | 约 11.7 MB 的网页模型，内嵌贴图 |
 | `logistics-building.blend` | 可编辑 Blender 源文件 |
 | `reference.jpg` | 用户提供的建模参考照片 |
 | `building-preview.png` | 模型渲染预览 |
