@@ -23,7 +23,7 @@ export function createLighting(scene,renderer,stage){
     if(i%4===1){const p=powered(new THREE.PointLight(0xffddac,0,21,2),140);p.position.set(x,4,7.8);fixtures.add(p)}
   }
   for(const z of [9,20]){
-    glow([.65,.08,.20],[-33,4.40,z],0xffdda2);
+    glow([.65,.08,.20],[-33,5.10,z],0xffdda2);
     const p=powered(new THREE.PointLight(0xffe0b8,0,10,2),45);p.position.set(-33,6.6,z);fixtures.add(p);
   }
   // Two yard lights, mounted on real poles with broad downward beams.
@@ -51,8 +51,8 @@ export function createLighting(scene,renderer,stage){
     const p=powered(new THREE.PointLight(0xffe0b8,0,16,2),85);p.position.set(34.3,3.9,z);fixtures.add(p);
   }
   // Guard booth and both parking canopies, separate from the truck headlights.
-  for(const [x,z] of [[-29.2,34.7],[-49.5,43],[-49.5,54],[-9,46],[-9,55]]){
-    const height=x===-29.2?2.78:2.95;
+  for(const [x,z] of [[-32,33.3],[-49.5,43],[-49.5,54],[-9,46],[-9,55]]){
+    const height=x===-32?2.78:2.95;
     body([1.1,.055,.14],[x,height,z],steel);glow([1,.022,.10],[x,height-.04,z],0xffe8bf);
     const p=powered(new THREE.PointLight(0xffe6bc,0,10,2),30);p.position.set(x,height-.16,z);fixtures.add(p);
   }

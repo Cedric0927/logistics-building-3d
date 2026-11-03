@@ -350,7 +350,7 @@ for x in (-29.0,-27.2,33,35):
     box('Yard / safety bollards',(x,-10,.53),(.38,.38,1.05),YELLOW)
     for z in (.25,.65):
         box('Yard / bollard bands',(x,-10,z),(.40,.40,.14),DARK)
-for x in (-35.5,35.5):
+for x in (-103.5,52.5):
     tube('Yard / fence rail',(x,-23,1.08),(x,-7,1.08),.04,METAL)
     for i in range(33):
         y=-23+i*.5
@@ -448,30 +448,30 @@ for x in (-89,-67,-51):
     poly('LeftWing / direction arrows',LINE,[(x-.75,-21,.038),(x+.75,-21,.038),(x,-20,.038)],[(0,1,2)])
 
 # Central rounded lobby: bridge enters at the first upper-floor level.
-for z in (10.2,14.1):
+for z in (10.95,14.55):
     for x in (-34.45,-31.55):
-        front_window('Center / tall entrance windows',x,-7.98,z,w=2.05,h=3.1,tall=True)
-box('Center / entry door glazing',(-33,-7.99,5.96),(3.8,.10,2.52),GLASS_DARK)
+        front_window('Center / tall entrance windows',x,-7.98,z,w=2.05,h=2.8,tall=True)
+box('Center / entry door glazing',(-33,-7.99,6.66),(3.8,.10,2.52),GLASS_DARK)
 for x in (-35.04,-33,-30.96):
-    box('Center / entry aluminum mullions',(x,-8.1,6.02),(.12,.16,2.64),METAL)
-box('Center / entry door header',(-33,-8.1,7.34),(4.2,.18,.13),METAL)
+    box('Center / entry aluminum mullions',(x,-8.1,6.72),(.12,.16,2.64),METAL)
+box('Center / entry door header',(-33,-8.1,8.04),(4.2,.18,.13),METAL)
 for x in (-33.25,-32.75):
-    tube('Center / door pull handles',(x,-8.23,5.72),(x,-8.23,6.20),.026,METAL)
-box('Center / SF entrance sign',(-33,-8.23,7.88),(6.6,.32,1.05),DARK)
-text('Center / SF EXPRESS lettering','SF EXPRESS',(-33,-8.405,8.04),.52,SIGNWHITE)
-text('Center / SF Chinese lettering','顺丰速运' if FONT else 'LOGISTICS',(-33,-8.415,7.65),.24,SIGNWHITE,font=FONT)
+    tube('Center / door pull handles',(x,-8.23,6.42),(x,-8.23,6.90),.026,METAL)
+box('Center / SF entrance sign',(-33,-8.23,8.58),(6.6,.32,1.05),DARK)
+text('Center / SF EXPRESS lettering','SF EXPRESS',(-33,-8.405,8.74),.52,SIGNWHITE)
+text('Center / SF Chinese lettering','顺丰速运' if FONT else 'LOGISTICS',(-33,-8.415,8.35),.24,SIGNWHITE,font=FONT)
 box('Center / ground service entry',(-33,-7.99,1.65),(2.2,.10,3.1),GLASS_DARK)
 
-# Elevated walkway, supported by columns and cross beams (estimated deck +4.70m).
-DECK=4.7
-box('Bridge / structural deck',(-33,-15.5,DECK-.17),(4.4,15,.34),ROOF)
-box('Bridge / diamond walkway',(-33,-15.5,DECK+.016),(4.3,15,.03),PAVER)
-for y in (-10.5,-16.5,-22.8):
+# Elevated walkway, supported by columns and cross beams (estimated deck +5.40m).
+DECK=5.4
+box('Bridge / structural deck',(-33,-18.5,DECK-.17),(4.4,21,.34),ROOF)
+box('Bridge / diamond walkway',(-33,-18.5,DECK+.016),(4.3,21,.03),PAVER)
+for y in (-10.5,-22.8,-28.8):
     for x in (-34.85,-31.15):
-        box('Bridge / concrete support piers',(x,y,2.19),(.55,.60,4.38),TILE)
-    box('Bridge / cross beams',(-33,y,4.35),(4.5,.48,.34),ROOF)
+        box('Bridge / concrete support piers',(x,y,(DECK-.32)/2),(.55,.60,DECK-.32),TILE)
+    box('Bridge / cross beams',(-33,y,DECK-.35),(4.5,.48,.34),ROOF)
 for x in (-35.12,-30.88):
-    box('Bridge / edge stringers',(x,-15.5,4.40),(.15,15,.25),DARK)
+    box('Bridge / edge stringers',(x,-18.5,DECK-.30),(.15,21,.25),DARK)
 
 def handrail(name,a,b):
     # a/b are points on the walking surface; rails follow slope on stairs.
@@ -483,10 +483,10 @@ def handrail(name,a,b):
         t=i/n;p=Vector(a).lerp(Vector(b),t)
         tube(name+' / balusters',(p.x,p.y,p.z+.04),(p.x,p.y,p.z+1.1),.017,METAL,6)
 for x in (-35.16,-30.84):
-    handrail('Bridge / stainless guardrails',(x,-8.2,DECK),(x,-23,DECK))
+    handrail('Bridge / stainless guardrails',(x,-8.2,DECK),(x,-29,DECK))
 
 # Orange warning panels attached to the two sides, matching the photographed bridge.
-for side,phrase in ((-1,'上下楼梯注意安全'),(1,'注意安全严禁翻越')):
+for side,phrase in ((-1,'上下楼梯注意安全文明通行'),(1,'注意安全严禁翻越文明通行')):
     x=-33+side*2.19
     for i,char in enumerate(phrase):
         y=-10.1-i*1.55
@@ -528,6 +528,11 @@ for x in (-43,-39):
     for z in (.25,.65):
         box('Stairs / bollard bands',(x,-25,z),(.34,.34,.14),DARK)
 
+
+# Put the stair block six metres outside the vehicle corridor, keeping the bridge above it.
+for (part,material),(verts,faces) in geometry.items():
+    if part.startswith('Stairs /'):
+        verts[:]=[(x,y-6,z) for x,y,z in verts]
 
 # Ground-level bridge structure and rear transfer hall, from the two new photos.
 # Blender coordinates: front yard negative Y; transfer hall extends behind office to +Y.
@@ -614,14 +619,14 @@ text('Warehouse / SF side sign','SF EXPRESS',(32.30,44.2,8.65),.95,DARK,rotation
 text('Warehouse / Chinese side sign','顺丰速运' if FONT else 'TRANSFER HALL',(32.32,44.2,7.68),.54,DARK,rotation=(math.pi/2,0,math.pi/2),font=FONT)
 
 # Bridge pier pads and longitudinal beam flanges.
-for y in (-10.5,-16.5,-22.8):
+for y in (-10.5,-22.8,-28.8):
     for x in (-34.85,-31.15):
         box('Bridge / pier foundation pads',(x,y,.11),(1.0,1.05,.22),ROOF)
-        box('Bridge / pier caps',(x,y,4.29),(.82,.85,.25),ROOF)
+        box('Bridge / pier caps',(x,y,DECK-.41),(.82,.85,.25),ROOF)
 for x in (-34.70,-31.30):
-    box('Bridge / steel longitudinal beam webs',(x,-15.5,4.14),(.10,14.8,.38),DARK)
-    for z in (3.94,4.34):
-        box('Bridge / longitudinal beam flanges',(x,-15.5,z),(.28,14.8,.055),METAL)
+    box('Bridge / steel longitudinal beam webs',(x,-18.5,DECK-.56),(.10,20.8,.38),DARK)
+    for z in (DECK-.76,DECK-.36):
+        box('Bridge / longitudinal beam flanges',(x,-18.5,z),(.28,20.8,.055),METAL)
 
 # Right-side circulation yard: drainage channel, crossing and separated parking bays.
 for y in range(-20,60,7):
@@ -673,8 +678,7 @@ for i,y in enumerate((0,9,19,32,45)):
         shrub=bpy.context.object;shrub.name='EastYard / planted shrub '+str(i)+' '+str(j)
         shrub.scale=(.62,.77,.83);shrub.data.materials.append(materials[LEAF])
 
-# Front approach and guard booth, based on the new ground-floor front photograph.
-# Left pedestrian branch reaches the existing stair foot; the vehicle lane stays to its right.
+# Controlled entrance: stair house, one-way exit and guard booth share the same front line.
 BOOTH=mat('Guard booth warm aluminum panels',(.60,.63,.57),.45,.32)
 TRIM=mat('Guard booth bronze window frames',(.45,.34,.17),.4,.50)
 TEAL=mat('Parking canopy painted steel',(.09,.23,.24),.53,.35)
@@ -682,94 +686,117 @@ PANEL=mat('Stair enclosure silver sheet panels',(.53,.65,.68),.5,.38)
 PANELJOINT=mat('Stair enclosure panel joints',(.30,.42,.45),.66,.2)
 CARBLUE=mat('Visitor car blue-gray paint',(.12,.25,.32),.3,.52)
 CARSILVER=mat('Visitor car silver paint',(.54,.61,.61),.29,.60)
-
-# Extend only the photographed approach, leaving the earlier main courtyard intact.
 box('Entrance / apron foundation',(-30,-47,-.22),(60,35,.42),GROUND)
-# Guard booth offset to the right of the stairwell, with the drive-through lane beside it.
-GX,GY=-29.2,-33.0
-box('Entrance / guard booth floor',(GX,GY,.11),(4.0,3.2,.22),ROOF)
-box('Entrance / guard booth lower panels',(GX,GY,.56),(3.95,3.15,.88),BOOTH)
-box('Entrance / guard booth glazing',(GX,GY,1.83),(3.88,3.08,1.70),GLASS)
+GX,GY=-32.0,-31.5
+# Shared front line Y=-33.1; front and west doors are genuine openings, not a solid glazing cube.
+box('Entrance / guard booth floor',(GX,GY,.07),(4.0,3.2,.14),ROOF)
+box('Entrance / shared secure lobby floor',(-38.2,-31.15,.025),(8.5,3.9,.05),ROOF)
 for x in (GX-1.98,GX+1.98):
     for y in (GY-1.58,GY+1.58):
         box('Entrance / booth corner posts',(x,y,1.48),(.11,.11,2.90),TRIM)
-for y in (GY-1.60,GY+1.60):
-    for z in (.98,2.68):
-        box('Entrance / booth window horizontal frames',(GX,y,z),(4.05,.10,.08),TRIM)
-    for x in (GX-1.06,GX+.40):
-        box('Entrance / booth window mullions',(x,y,1.82),(.075,.10,1.77),TRIM)
-for x in (GX-2.01,GX+2.01):
-    box('Entrance / booth side mullions',(x,GY,1.82),(.10,.075,1.77),TRIM)
-    for z in (.98,2.68):
-        box('Entrance / booth side frames',(x,GY,z),(.10,3.25,.08),TRIM)
+# East and rear glazed walls.
+box('Entrance / guard booth glazing east',(GX+1.96,GY,1.83),(.055,3.08,1.7),GLASS)
+box('Entrance / booth east base',(GX+1.96,GY,.55),(.08,3.08,.96),BOOTH)
+box('Entrance / guard booth glazing rear',(GX,GY+1.55,1.83),(3.88,.055,1.7),GLASS)
+box('Entrance / booth rear base',(GX,GY+1.55,.55),(3.88,.08,.96),BOOTH)
+for z in (1.0,2.69):
+    box('Entrance / booth east frames',(GX+2,GY,z),(.10,3.2,.075),TRIM)
+    box('Entrance / booth rear frames',(GX,GY+1.60,z),(4,.10,.075),TRIM)
+# Front door spans X=-33.05..-31.55. Keep floor-to-header opening unobstructed.
+for x,w in ((-33.50,.94),(-30.77,1.46)):
+    box('Entrance / booth front sidelights',(x,-33.10,1.83),(w,.055,1.7),GLASS)
+    box('Entrance / booth front base panels',(x,-33.10,.55),(w,.08,.96),BOOTH)
+for x in (-33.05,-31.55):
+    box('Entrance / front door jambs',(x,-33.15,1.35),(.075,.10,2.7),TRIM)
+box('Entrance / front door lintel',(-32.30,-33.15,2.72),(1.58,.10,.09),TRIM)
+# Front leaf open inward, clear the entry line and the west internal door.
+box('Entrance / booth front door open leaf',(-33.05,-32.40,1.35),(.055,1.4,2.55),GLASS_DARK)
+box('Entrance / front leaf handle',(-32.99,-32.30,1.25),(.055,.27,.04),METAL)
+# West wall, interrupted by the internal door Y=-31.25..-30.05.
+for y,length in ((-32.18,1.79),(-29.99,.12)):
+    box('Entrance / booth west glazing',(-34,y,1.83),(.055,length,1.7),GLASS)
+    box('Entrance / booth west base',(-34,y,.55),(.08,length,.96),BOOTH)
+for y in (-31.25,-30.05):
+    box('Entrance / internal left door jambs',(-34.06,y,1.35),(.10,.075,2.7),TRIM)
+box('Entrance / internal left door lintel',(-34.06,-30.65,2.72),(.10,1.28,.09),TRIM)
+box('Entrance / internal left door open leaf',(-34.63,-31.25,1.35),(1.2,.055,2.55),GLASS_DARK)
+box('Entrance / internal left door handle',(-34.83,-31.19,1.25),(.27,.045,.04),METAL)
+box('Entrance / guard desk',(-30.65,-31.8,.86),(.65,1.35,.13),DARK)
 box('Entrance / guard booth roof',(GX,GY,2.96),(4.7,3.92,.28),TEAL)
 box('Entrance / booth roof cap',(GX,GY,3.13),(4.85,4.07,.06),METAL)
-box('Entrance / booth front door',(GX-.33,GY-1.66,1.38),(1.35,.055,2.50),GLASS_DARK)
-for x in (GX-1.04,GX+.38):
-    box('Entrance / booth door frame',(x,GY-1.71,1.39),(.07,.07,2.58),TRIM)
-tube('Entrance / booth door handle',(GX+.20,GY-1.78,1.15),(GX+.20,GY-1.78,1.55),.023,METAL,8)
-box('Entrance / booth sign backing',(GX,GY-1.99,2.95),(2.3,.045,.26),WHITE)
-text('Entrance / guard booth sign','门卫' if FONT else 'GUARD',(GX,GY-2.02,2.95),.21,DARK,font=FONT)
-# Removable ramp/threshold at the booth door, not a pedestrian barrier.
-box('Entrance / booth threshold',(GX-.33,GY-1.89,.08),(1.55,.48,.16),DARK)
-
-# Silver panel enclosure on the stairwell side and back. Keep its foot and approach open.
-# The photographed panels obscure the tread arrangement, which remains provisional.
-box('Entrance / stair enclosure west panels',(-42.43,-21.0,3.75),(.14,8.1,7.5),PANEL)
-box('Entrance / stair enclosure rear panels',(-39.65,-16.82,3.75),(5.7,.14,7.5),PANEL)
+box('Entrance / booth sign backing',(GX,-33.48,2.95),(2.3,.045,.26),WHITE)
+text('Entrance / guard booth sign','人员入口' if FONT else 'ENTRY',(GX,-33.52,2.95),.21,DARK,font=FONT)
+# Enclosed stair front is in line with the guard booth. Public access is via booth only.
+box('Entrance / stair enclosure west panels',(-42.43,-27.95,3.75),(.14,10.3,7.5),PANEL)
+box('Entrance / stair enclosure rear panels',(-39.65,-22.65,3.75),(5.7,.14,7.5),PANEL)
+box('Entrance / stair enclosure front panels',(-39.58,-33.10,3.75),(5.70,.14,7.5),PANEL)
 for z in (1.45,2.95,4.45,5.95,7.45):
-    box('Entrance / west panel horizontal joints',(-42.515,-21,z),(.025,8.12,.022),PANELJOINT)
-    box('Entrance / rear panel horizontal joints',(-39.65,-16.91,z),(5.7,.025,.022),PANELJOINT)
-for y in (-24.5,-23,-21.5,-20,-18.5,-17):
-    box('Entrance / west panel vertical joints',(-42.515,y,3.75),(.025,.022,7.48),PANELJOINT)
+    box('Entrance / west panel horizontal joints',(-42.515,-27.95,z),(.025,10.32,.022),PANELJOINT)
+    box('Entrance / front panel horizontal joints',(-39.58,-33.19,z),(5.7,.025,.022),PANELJOINT)
 for x in (-42.4,-41,-39.6,-38.2,-36.8):
-    box('Entrance / rear panel vertical joints',(x,-16.91,3.75),(.022,.025,7.48),PANELJOINT)
-# Stair-foot handrails guide the left turn without closing the 2.4m stair access.
-handrail('Entrance / left pedestrian outer rail',(-44,-35,.03),(-44,-27,.03))
-
-# Long ladder-pattern pedestrian strip in the photograph.
-for x in (-35.65,-33.45):
-    box('Entrance / pedestrian continuous edges',(x,-48.7,.021),(.14,24.4,.028),LINE)
-for i in range(10):
-    box('Entrance / pedestrian ladder rungs',(-34.55,-60.3+i*2.5,.022),(2.25,.13,.028),LINE)
-# Left branch past the booth, then towards the stair bottom (-41,-23.8).
-for y in (-36.4,-34.3):
-    box('Entrance / left-turn path edges',(-38,y,.023),(6.85,.12,.028),LINE)
-for x in (-42.05,-39.95):
-    box('Entrance / stair approach edges',(x,-29.65,.023),(.12,9.3,.028),LINE)
-# Vehicle lane goes straight past the right side of the booth to the office courtyard.
+    box('Entrance / front panel vertical joints',(x,-33.19,3.75),(.022,.025,7.48),PANELJOINT)
+for y in (-32.5,-31,-29.5,-28,-26.5,-25,-23.5):
+    box('Entrance / west panel vertical joints',(-42.515,y,3.75),(.025,.022,7.48),PANELJOINT)
+# Exit cage occupies only the middle cell. Behind it, the booth's west door opens to the stairs.
+TX,TY=-35.35,-32.0
+for x in (-36.55,-34.15):
+    box('Entrance / turnstile side partition',(x,TY,1.15),(.08,2.20,2.3),METAL)
+# Cut open front and rear of the cage; side grids prevent bypassing the rotor.
+for i in range(24):
+    a=i*math.tau/24
+    if abs(math.cos(a))>.60:
+        x=TX+.86*math.cos(a);y=TY+.86*math.sin(a)
+        tube('Entrance / one-way turnstile cage',(x,y,.08),(x,y,2.20),.022,METAL,6)
+for i in range(32):
+    a=i*math.tau/32;b=(i+1)*math.tau/32
+    tube('Entrance / turnstile crown',(TX+.89*math.cos(a),TY+.89*math.sin(a),2.23),(TX+.89*math.cos(b),TY+.89*math.sin(b),2.23),.035,METAL,8)
+tube('Entrance / one-way exit rotor',(TX,TY,.04),(TX,TY,2.20),.065,METAL,12)
+for k in range(3):
+    a=k*math.tau/3+.20
+    for z in (.30,.62,.94,1.26,1.58,1.90):
+        tube('Entrance / rotor radial bars',(TX,TY,z),(TX+.76*math.cos(a),TY+.76*math.sin(a),z),.022,METAL,6)
+box('Entrance / exit crown sign',(TX,-33.13,2.35),(2.25,.08,.28),TEAL)
+text('Entrance / one-way exit label','单向出口' if FONT else 'EXIT ONLY',(TX,-33.19,2.35),.21,WHITE,font=FONT)
+# Rails separate the incoming front door and outgoing turnstile queue.
+handrail('Entrance / entry exit queue divider',(-34.10,-33.3,.02),(-34.10,-39.0,.02))
+# Outside entry marking leads straight into the booth; the left turn happens INSIDE.
+for x in (-33.40,-31.20):
+    box('Entrance / pedestrian continuous edges',(x,-47.0,.021),(.14,27.4,.028),LINE)
+for i in range(11):
+    box('Entrance / pedestrian ladder rungs',(-32.30,-60.3+i*2.5,.022),(2.25,.13,.028),LINE)
+for y in (-40,-35):
+    box('Entrance / entry foot arrows',(-32.3,y,.025),(.12,1.0,.025),GREEN)
+    poly('Entrance / entry foot arrows',GREEN,[(-32.7,y+.35,.041),(-31.9,y+.35,.041),(-32.3,y+.95,.041)],[(0,1,2)])
+box('Entrance / exit outward arrow',(TX,-35.2,.026),(.12,1.1,.026),LINE)
+poly('Entrance / exit outward arrow',LINE,[(TX-.4,-35.6,.042),(TX+.4,-35.6,.042),(TX,-36.2,.042)],[(0,1,2)])
+# Vehicle-only transverse lane under the bridge, between the relocated pier rows.
+box('Circulation / underbridge asphalt surface',(-38.5,-16.2,.035),(29,7.6,.026),ASPHALT)
+for y in (-12.4,-20.0):
+    box('Circulation / underbridge road edges',(-32,y,.069),(42,.14,.028),LINE)
+for x in (-50,-40,-30):
+    box('Circulation / eastbound underbridge arrows',(x,-16.2,.070),(2.2,.18,.028),LINE)
+    poly('Circulation / eastbound underbridge arrows',LINE,[(x+.65,-16.85,.087),(x+.65,-15.55,.087),(x+1.55,-16.2,.087)],[(0,1,2)])
+# Retain the separate car approach to the office, right of the pedestrian facilities.
 for x in (-26.3,-19.7):
     box('Entrance / vehicle lane edges',(x,-45,.021),(.14,32,.028),LINE)
 for y in (-56,-43):
     box('Entrance / forward vehicle arrows',(-23,y,.026),(.20,2.4,.03),LINE)
     poly('Entrance / forward vehicle arrows',LINE,[(-23.70,y+.65,.043),(-22.30,y+.65,.043),(-23,y+1.60,.043)],[(0,1,2)])
-# Turn indicator at the pedestrian junction.
-box('Entrance / left pedestrian arrow',(-37.4,-35.35,.028),(1.6,.16,.03),LINE)
-poly('Entrance / left pedestrian arrow',LINE,[(-38.8,-35.35,.046),(-37.9,-35.95,.046),(-37.9,-34.75,.046)],[(0,1,2)])
-
-# Blue/white mesh boundary and open gate beside the booth, with clear road aperture.
-for k,(a,b,colour) in enumerate(((-19.0,-12.0,BLUE),(-12.0,-4.0,WHITE))):
-    for x in (a,b):
-        box('Entrance / mesh fence posts',(x,-33.0,1.13),(.10,.10,2.26),colour)
-    for z in (.15,2.2):
-        tube('Entrance / mesh fence horizontal rails',(a,-33,z),(b,-33,z),.025,colour,6)
-    count=math.ceil((b-a)/.20)
-    for i in range(count+1):
-        x=a+(b-a)*i/count
+handrail('Entrance / pedestrian roadside separation',(-28,-60,.02),(-28,-34,.02))
+# Blue-white perimeter fence, with the drive-through gate folded aside.
+for a,b,colour in ((-19,-12,BLUE),(-12,-4,WHITE)):
+    for x in (a,b):box('Entrance / mesh fence posts',(x,-33,1.13),(.10,.10,2.26),colour)
+    for z in (.15,2.2):tube('Entrance / mesh fence horizontal rails',(a,-33,z),(b,-33,z),.025,colour,6)
+    for i in range(math.ceil((b-a)/.2)+1):
+        x=a+(b-a)*i/math.ceil((b-a)/.2)
         tube('Entrance / mesh fence wires',(x,-33,.15),(x,-33,2.2),.012,colour,5)
-# Gate leaf folds along the lane edge rather than blocking the straight drive.
-for y in (-33,-37.2):
-    box('Entrance / open gate frame',(-19,y,1.12),(.10,.10,2.24),BLUE)
-for z in (.16,2.15):
-    tube('Entrance / open gate rails',(-19,-33,z),(-19,-37.2,z),.026,BLUE,6)
+for y in (-33,-37.2):box('Entrance / open gate frame',(-19,y,1.12),(.10,.10,2.24),BLUE)
+for z in (.16,2.15):tube('Entrance / open gate rails',(-19,-33,z),(-19,-37.2,z),.026,BLUE,6)
 for i in range(22):
-    y=-33-i*.2
-    tube('Entrance / open gate mesh',(-19,y,.16),(-19,y,2.15),.012,BLUE,5)
-# Barrier arm is raised; the inbound route remains unobstructed.
+    y=-33-i*.2;tube('Entrance / open gate mesh',(-19,y,.16),(-19,y,2.15),.012,BLUE,5)
 box('Entrance / barrier operator',(-26.85,-31.3,.60),(.45,.46,1.2),BOOTH)
 box('Entrance / raised barrier arm',(-26.85,-31.3,2.83),(.10,.10,3.50),WHITE)
-for z in (1.35,2.05,2.75,3.45,4.15):
-    box('Entrance / barrier red stripes',(-26.85,-31.3,z),(.115,.115,.23),RED)
+for z in (1.35,2.05,2.75,3.45,4.15):box('Entrance / barrier red stripes',(-26.85,-31.3,z),(.115,.115,.23),RED)
 
 # Steel parking canopies on both sides of the approach.
 def parking_canopy(name,x0,x1,y0,y1):
@@ -880,7 +907,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Front approach passes guard booth on its right; pedestrian path turns left to stair foot. Stair tread arrangement remains provisional behind photographed cladding.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg'],'bridgeDeckMeters':5.4,'stairRisers':28,'layoutNote':'Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
@@ -912,3 +939,26 @@ scene.render.resolution_y=1100
 scene.render.filepath=str(ROOT/'entrance-preview.png')
 bpy.ops.render.render(write_still=True)
 print('ENTRANCE_RENDERED',flush=True)
+
+# Review-only cutaway render: public model export above remains fully enclosed.
+for obj in scene.objects:
+    if any(tag in obj.name for tag in ('Entrance / guard booth roof','Entrance / booth roof cap','Entrance / stair enclosure front panels','Entrance / front panel horizontal joints','Entrance / front panel vertical joints')):
+        obj.hide_render=True
+paths=json.loads((ROOT/'circulation-layout.json').read_text(encoding='utf-8'))
+FLOWBLUE=mat('Vehicle circulation blue',(.03,.35,.70),.5,emission=.5)
+for key,material in (('entry',GREEN),('exit',ORANGE),('vehicles',FLOWBLUE)):
+    points=paths[key] if key!='vehicles' else [(x,.10,z) for x,z in paths[key]]
+    curve=bpy.data.curves.new('Review path '+key,'CURVE');curve.dimensions='3D';curve.bevel_depth=.045;curve.bevel_resolution=2
+    spline=curve.splines.new('POLY');spline.points.add(len(points)-1)
+    for dst,(x,h,z) in zip(spline.points,points):dst.co=(x+(-.12 if key=='exit' else 0),-z,h+(.04 if key=='exit' else 0),1)
+    obj=bpy.data.objects.new('Review circulation '+key,curve);scene.collection.objects.link(obj);obj.data.materials.append(materials[material])
+text('Review entry caption','进：正门 → 亭内左门' if FONT else 'IN: FRONT DOOR / LEFT DOOR',(-31,-35.8,3.9),.30,GREEN,font=FONT)
+text('Review exit caption','出：单向旋转门' if FONT else 'OUT: TURNSTILE',(-38.5,-35.6,2.5),.30,ORANGE,font=FONT)
+cam.location=(-22,-57,24)
+cam.rotation_euler=(Vector((-36,-27,2.4))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=30
+scene.render.resolution_x=1440
+scene.render.resolution_y=1100
+scene.render.filepath=str(ROOT/'circulation-preview.png')
+bpy.ops.render.render(write_still=True)
+print('CIRCULATION_RENDERED',flush=True)

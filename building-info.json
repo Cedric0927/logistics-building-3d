@@ -1,7 +1,7 @@
 {
-  "meshObjects": 539,
-  "triangles": 224463,
-  "glbBytes": 12319036,
+  "meshObjects": 569,
+  "triangles": 236120,
+  "glbBytes": 12887264,
   "sourcePhoto": "reference.jpg",
   "additionalPhotos": [
     "reference-right-bridge.jpg",
@@ -10,9 +10,9 @@
     "reference-right-warehouse.jpg",
     "reference-front-entrance.jpg"
   ],
-  "bridgeDeckMeters": 4.7,
+  "bridgeDeckMeters": 5.4,
   "stairRisers": 28,
-  "layoutNote": "Front approach passes guard booth on its right; pedestrian path turns left to stair foot. Stair tread arrangement remains provisional behind photographed cladding.",
+  "layoutNote": "Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.",
   "estimatedDimensionsMeters": {
     "frontage": 135,
     "mainDepth": 12,

@@ -8,19 +8,22 @@
 
 ![建筑模型预览](building-preview.png)
 
-## 新增正面保安亭与入口动线
+## 入口与天桥的人车分流
 
-按正面一楼照片 `reference-front-entrance.jpg`，并结合用户说明补建入口：
+根据用户补充的通行关系修正入口：楼梯建筑、单向旋转出口、保安亭横向并排，前沿在同一条线上。
 
-- 保安亭位于天桥前方，人行通道到亭前左转，再接入楼梯底部；亭右侧保留直行车道，通向办公楼前的作业场院。
-- 两侧钢结构停车雨棚、简化停放轿车、长条梯格人行标线、车道边线与箭头、蓝白网片围栏和沿路边折起的门扇。
-- 道闸按抬起状态展示，使车道保持贯通。货车从新车道驶入，完全通过保安亭后再转向原有 07 号月台，装卸阶段仍沿用原来的时序。
-- 用新增保安亭取代上一版暂定的桥下服务小房，并在楼梯侧面及背面补银灰色围护板；留出正面楼梯开口。照片未显示完整踏步，暂保留原先两段折返形式，不据被遮挡的照片推定圆形螺旋踏步。
-- 新增“保安亭与入口”“正面入场”视角；夜间保安亭及停车雨棚随已有昼夜系统亮灯。
+- **进楼**：从保安亭正面门进入，在亭内左转，经左侧门进入楼梯间，上楼后通过天桥到办公楼。
+- **出楼**：从楼梯下来，经楼梯与保安亭中间的单向旋转出口离开；出口与进亭通道分开。
+- **车行**：天桥下方为贯通车道。货车演示从桥下经过，再转向原有 07 号月台；人行路径在车道外侧上楼，在桥面越过车道。
+- 保安亭的正门和内侧左门均留有实际门洞，门扇以开启状态展示；不再使用封闭玻璃盒代替可通行门口。出口为全高旋转门外观，未模拟门禁逻辑或人员动画。
+- 楼梯整体移到车道外侧，调整挡路桥墩，保留净空。当前模型桥面估算高度为 5.40 米，最低纵梁约 4.61 米；精修货车模型约 4.16 米高。以上仅用于展示模型的碰撞检查，不是现场测量或通车标准。
+- 开发界面新增“人车分流”视角及“入口剖视与人车动线”选项：临时隐藏保安亭屋顶与楼梯前围护，绿色为进楼路线、橙色为出楼路线、蓝色为车行路线。嵌入预览始终隐藏这些开发辅助线。
 
-保安亭、停车雨棚的尺寸和相对距离仍为照片近似，标识仅示意值守用途。入口只做外观与动线展示，未模拟人员检查或道闸运转。
+保留两侧停车雨棚、停放轿车和银灰色围护板；楼梯具体踏步形态仍按已有照片近似，现场尺寸待后续照片校准。
 
-![保安亭与入口动线](entrance-preview.png)
+![入口人车分流剖视示意](circulation-preview.png)
+
+![保安亭与单向出口外观](entrance-preview.png)
 
 ## 新增右侧与后方中转库房
 
@@ -42,7 +45,7 @@
 
 - 开发页面增加“全楼总览 / 右侧楼翼 / 左侧楼翼 / 天桥楼梯”视角，保留作业控制面板。
 - 左侧雨棚灯、办公室窗光和入口照明接入已有昼夜系统；全楼视角与阴影范围一并调整。
-- 右侧 07 号月台装卸流程保留；驶入起点向右移开，使货车绕开新天桥及楼梯。
+- 右侧 07 号月台装卸流程保留；车辆路线随入口布局更新，货车由桥下车道通过，并避开楼梯间。
 - 新照片并入仓库：`reference-right-bridge.jpg` 对应第一张右侧照片，`reference-left-bridge.jpg` 对应第二张左侧照片。模型、Blender 源文件和生成脚本同步更新。
 - 两张照片不能确定完整平面：目前采用两翼沿同一主立面连接的近似布局；天桥长度、桥面高度、楼梯下半段与折返平台按照片推定，后续可用平面图或地面照片修正。
 
@@ -89,7 +92,7 @@ PORT=4177 npm start
 
 克隆后运行 `npm start`，打开 `http://127.0.0.1:4176/preview.html` 查看纯画面，打开 `embed-example.html` 查看实际嵌入示例。
 
-集成到自己的项目（React / Vue / 普通 HTML 均可）：将仓库静态文件复制到自己项目的 `public/logistics/`，保持目录结构，至少包含 `preview.html`、`index.html`、`app.mjs`、`simulation.mjs`、`lighting.mjs`、`light-cycle.mjs`、`simulation.css`、两个 `.glb` 和 `vendor/three/`。无需复制 Blender 源文件、照片或开发脚本。
+集成到自己的项目（React / Vue / 普通 HTML 均可）：将仓库静态文件复制到自己项目的 `public/logistics/`，保持目录结构，至少包含 `preview.html`、`index.html`、`app.mjs`、`simulation.mjs`、`circulation.mjs`、`lighting.mjs`、`light-cycle.mjs`、`simulation.css`、两个 `.glb` 和 `vendor/three/`。无需复制 Blender 源文件、照片或开发脚本。
 
 ```html
 <iframe
@@ -109,7 +112,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `loop` | `1` | 0 为只播放一轮 |
 | `time` | `0` | 初始作业秒数，0–80；40 为卸货阶段 |
 | `speed` | `1` | 作业速度，0.25–4 |
-| `view` | `overview` | overview / right / left / bridge / ground / warehouse / entrance / approach / dock / truck / equipment / top |
+| `view` | `overview` | overview / right / left / bridge / ground / warehouse / circulation / entrance / approach / dock / truck / equipment / top |
 | `autoLight` | `0` | 1 开启自动昼夜 |
 | `interactive` | `1` | 0 禁止鼠标操作，仅播放画面 |
 
@@ -131,7 +134,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `create-equipment.py` | Blender 精修设备生成脚本 |
 | `equipment-preview.png` / `equipment-info.json` | 设备渲染及规模说明 |
 | `building.html` | 原始静态建筑查看器 |
-| `logistics-building.glb` | 约 12.3 MB 的网页模型，内嵌贴图 |
+| `logistics-building.glb` | 约 12.9 MB 的网页模型，内嵌贴图 |
 | `logistics-building.blend` | 可编辑 Blender 源文件 |
 | `reference.jpg` | 用户提供的建模参考照片 |
 | `building-preview.png` | 模型渲染预览 |
@@ -146,6 +149,8 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 ```sh
 npm test
 ```
+
+新增通行检查会读取 GLB 的实际门扇/墙面三角形，验证亭内进门路线、保安亭与楼梯前沿对齐、人行路线不在地面跨车道，以及货车穿桥时的梁底和桥墩净空。
 
 检查展示文件的 SHA-256、GLB 文件头和长度、嵌入贴图，以及网页引用的本地素材；随后检查 12 件货物守恒、输送时停稳开门与传送带完全伸出、货物流向厂房、清带后收回、阶段连续与回放重置。
 

@@ -1,3 +1,4 @@
+import {PERSON_ENTRY,PERSON_EXIT,VEHICLE_APPROACH} from './circulation.mjs';
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
@@ -12,7 +13,8 @@ const $=s=>document.querySelector(s),container=$('#scene');
 let renderer,ready=false,playing=false,time=0,last=performance.now(),speed=1,lastTitle='';
 const scene=new THREE.Scene();
 const camera=new THREE.PerspectiveCamera(40,1,.1,700);
-let controls,dockLabel,lighting;
+let controls,dockLabel,lighting,circulationOverlay;
+const entranceCutawayParts=[];
 let lightHour=12,targetHour=12;
 const truck=new THREE.Group(),conveyor=new THREE.Group();
 const wheels=[],parcels=[],cutawayParts=[],beltSections=[],beltTreads=[];
@@ -30,6 +32,24 @@ function labelTexture(body,bg='#eff2e8',color='#28553e'){
 function label(body,pos,width=5,color='#28553e'){
   const sprite=new THREE.Sprite(new THREE.SpriteMaterial({map:labelTexture(body, '#eff2e8',color),depthTest:false}));sprite.position.set(...pos);sprite.scale.set(width,width/4,1);sprite.renderOrder=5;scene.add(sprite);return sprite;
 }
+
+function makeCirculationOverlay(){
+  circulationOverlay=new THREE.Group();circulationOverlay.name='Development circulation overlay';scene.add(circulationOverlay);
+  function route(points,color){const material=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.85,depthTest:false});for(let i=1;i<points.length;i++){
+    const a=new THREE.Vector3(...points[i-1]),b=new THREE.Vector3(...points[i]),d=b.clone().sub(a),m=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,d.length(),7),material);m.position.copy(a).add(b).multiplyScalar(.5);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize());m.renderOrder=20;circulationOverlay.add(m);
+  }}
+  route(PERSON_ENTRY,0x22a96b);route(PERSON_EXIT.map(([x,y,z])=>[x-.12,y+.04,z]),0xe68b25);route(VEHICLE_APPROACH.map(([x,z])=>[x,.16,z]),0x208ed0);
+  for(const [title,pos,width,color] of [
+    ['进：正门→左门→楼梯',[-29.5,4.4,35],6,'#24754c'],
+    ['出：下楼→单向门',[-40.5,3.8,35],5.5,'#a85e1f'],
+    ['车：桥下通行',[-32,2.2,15],6,'#246b96']
+  ])circulationOverlay.add(label(title,pos,width,color));
+  for(const [a,b,color] of [[[-34.2,.3,30.65],[-37,.3,30.65],0x22a96b],[[-35.47,.3,34],[-35.47,.3,37],0xe68b25],[[-35,.3,16.2],[-30,.3,16.2],0x208ed0]]){
+    const start=new THREE.Vector3(...a),direction=new THREE.Vector3(...b).sub(start),arrow=new THREE.ArrowHelper(direction.clone().normalize(),start,direction.length(),color,.55,.3);circulationOverlay.add(arrow);
+  }
+  circulationOverlay.visible=false;
+}
+
 async function loadEquipment(){
   const equipment=await new GLTFLoader().loadAsync('./refined-equipment.glb');
   const find=name=>{const o=equipment.scene.getObjectByName(name);if(!o)throw new Error('Missing equipment pivot: '+name);return o};
@@ -78,7 +98,8 @@ function setView(view){
   controls.maxPolarAngle=['ground','approach'].includes(view)?Math.PI/2+.08:Math.PI/2-.025;
   const aspect=container.clientWidth/container.clientHeight,t=sample(time).truck;
   const offset=new THREE.Vector3(-8,4.8,10).applyAxisAngle(new THREE.Vector3(0,1,0),t.yaw);
-  const presets={overview:{pos:aspect<1?[-170,170,285]:[-140,123,208],target:[-27,6,0]},right:{pos:[-53,44,83],target:[0,6,7]},left:{pos:[-111,32,68],target:[-66,7,6]},bridge:{pos:[-53,17,41],target:[-35.3,5.2,16]},ground:{pos:[42,2.9,29],target:[-23,5,8]},warehouse:{pos:[84,28,9],target:[19,7,-24]},entrance:{pos:[-20,15,66],target:[-31,3.8,33]},approach:{pos:[-31,2.7,63],target:[-33,4.1,25]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[-27,270,0],target:[-27,0,0]}};
+  const presets={overview:{pos:aspect<1?[-170,170,285]:[-140,123,208],target:[-27,6,0]},right:{pos:[-53,44,83],target:[0,6,7]},left:{pos:[-111,32,68],target:[-66,7,6]},bridge:{pos:[-53,17,41],target:[-35.3,5.2,16]},ground:{pos:[42,2.9,29],target:[-23,5,8]},circulation:{pos:[-22,25,61],target:[-36,2.8,28.5]},warehouse:{pos:[84,28,9],target:[19,7,-24]},entrance:{pos:[-20,15,66],target:[-31,3.8,33]},approach:{pos:[-31,2.7,63],target:[-33,4.1,25]},dock:{pos:[-12,20,27],target:[DOCK_X,2,9]},truck:{pos:[t.x+offset.x,offset.y,t.z+offset.z],target:[t.x,2,t.z-.5]},equipment:{pos:[DOCK_X-4.6,6.6,16],target:[DOCK_X,1.35,8.2]},top:{pos:[-27,270,0],target:[-27,0,0]}};
+  if(view==='circulation'&&!embedded)$('#entry-cutaway').checked=true;
   if(view==='equipment')$('#cutaway').checked=true;
   if(view==='truck')$('#cutaway').checked=false;
   if(dockLabel)dockLabel.visible=!embedded&&['overview','top'].includes(view);
@@ -87,6 +108,9 @@ function setView(view){
 }
 let doors;
 function renderState(){
+  const inspectEntrance=!embedded&&$('#entry-cutaway').checked;
+  for(const p of entranceCutawayParts)p.visible=!inspectEntrance;
+  if(circulationOverlay)circulationOverlay.visible=inspectEntrance;
   const s=sample(time);truck.position.set(s.truck.x,.01,s.truck.z);truck.rotation.y=s.truck.yaw;
   wheels.forEach(w=>w.rotation.x=s.truck.distance/.56);doors[0].rotation.y=-s.doors*Math.PI*.8;doors[1].rotation.y=s.doors*Math.PI*.8;
   beltSections.forEach((part,i)=>{part.position.z=5.65+2.1*(i+1)*s.extension});
@@ -113,6 +137,7 @@ $('#reset').addEventListener('click',()=>{time=0;playing=false;renderState()});
 $('#next').addEventListener('click',()=>{time=nextPhase(time);playing=false;renderState()});
 $('#timeline').max=TOTAL;$('#timeline').addEventListener('input',e=>{time=Number(e.target.value);playing=false;renderState()});
 $('#speed').addEventListener('change',e=>{speed=Number(e.target.value)});
+$('#entry-cutaway').addEventListener('change',()=>{if(ready)renderState()});
 $('#cutaway').addEventListener('change',()=>{if(ready)renderState()});
 document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 document.addEventListener('keydown',e=>{if(embedded)return;if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(e.target.tagName))return;if(e.code==='Space'){e.preventDefault();toggle()}else if(e.code==='KeyR'&&ready){time=0;playing=false;renderState()}});
@@ -137,6 +162,8 @@ try{
   const gltf=await new GLTFLoader().loadAsync('./logistics-building.glb');
   const remove=[];gltf.scene.traverse(obj=>{if(/Vehicle[_ ]0[1-4]/.test(obj.name)||/Loading.*bay[_ ]07.*dark[_ ]opening/.test(obj.name))remove.push(obj);if(obj.isMesh){obj.castShadow=true;obj.receiveShadow=true;if(obj.material.map)obj.material.map.anisotropy=4}});
   remove.forEach(obj=>obj.removeFromParent());scene.add(gltf.scene);
+  gltf.scene.traverse(o=>{if(/Entrance.*(guard.booth.roof|booth.roof.cap|stair.enclosure.front.panels|front.panel.horizontal.joints|front.panel.vertical.joints)/i.test(o.name))entranceCutawayParts.push(o)});
+  makeCirculationOverlay();
   ready=true;$('#load-status').textContent='场景已就绪 · 07 号月台';$('#loading').hidden=true;
   for(const id of ['play','reset','next','timeline'])$('#'+id).disabled=false;
   if(embedded){
@@ -145,7 +172,7 @@ try{
     playing=params.get('autoplay')!=='0';$('#loop').checked=params.get('loop')!=='0';
     $('#auto-light').checked=params.get('autoLight')==='1';
     controls.enabled=params.get('interactive')!=='0';
-    const view=params.get('view');setView(['overview','right','left','bridge','ground','warehouse','entrance','approach','dock','truck','equipment','top'].includes(view)?view:'overview');
+    const view=params.get('view');setView(['overview','right','left','bridge','ground','warehouse','circulation','entrance','approach','dock','truck','equipment','top'].includes(view)?view:'overview');
     syncLightUI();
   }
   lighting.setHour(lightHour);renderState();requestAnimationFrame(frame);
