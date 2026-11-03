@@ -464,8 +464,8 @@ box('Center / ground service entry',(-33,-7.99,1.65),(2.2,.10,3.1),GLASS_DARK)
 
 # Elevated walkway, supported by columns and cross beams (estimated deck +5.40m).
 DECK=5.4
-box('Bridge / structural deck',(-33,-18.5,DECK-.17),(4.4,21,.34),ROOF)
-box('Bridge / diamond walkway',(-33,-18.5,DECK+.016),(4.3,21,.03),PAVER)
+box('Bridge / structural deck',(-33,-17.5,DECK-.17),(4.4,19,.34),ROOF)
+box('Bridge / diamond walkway',(-33,-17.5,DECK+.016),(4.3,19,.03),PAVER)
 for y in (-10.5,-22.8,-28.8):
     for x in (-34.85,-31.15):
         box('Bridge / concrete support piers',(x,y,(DECK-.32)/2),(.55,.60,DECK-.32),TILE)
@@ -483,7 +483,7 @@ def handrail(name,a,b):
         t=i/n;p=Vector(a).lerp(Vector(b),t)
         tube(name+' / balusters',(p.x,p.y,p.z+.04),(p.x,p.y,p.z+1.1),.017,METAL,6)
 for x in (-35.16,-30.84):
-    handrail('Bridge / stainless guardrails',(x,-8.2,DECK),(x,-29,DECK))
+    handrail('Bridge / stainless guardrails',(x,-8.2,DECK),(x,-27,DECK))
 
 # Orange warning panels attached to the two sides, matching the photographed bridge.
 for side,phrase in ((-1,'上下楼梯注意安全文明通行'),(1,'注意安全严禁翻越文明通行')):
@@ -493,46 +493,39 @@ for side,phrase in ((-1,'上下楼梯注意安全文明通行'),(1,'注意安全
         box('Bridge / orange safety panels',(x,y,DECK+.60),(.055,1.25,.83),ORANGE)
         text('Bridge / safety text '+str(side)+' '+str(i),char if FONT else '!',(x+side*.034,y,DECK+.60),.63,SIGNWHITE,rotation=(math.pi/2,0,side*math.pi/2),font=FONT)
 
-# Top platform, two 14-riser flights and an intermediate return landing.
-# The lower flight is only partly photographed; this arrangement is inferred.
-box('Stairs / upper landing',(-35.1,-24.25,DECK-.18),(8.6,2.5,.36),ROOF)
-box('Stairs / upper landing pavers',(-35.1,-24.25,DECK+.016),(8.5,2.45,.03),PAVER)
-handrail('Stairs / top landing front',(-39.4,-25.5,DECK),(-30.84,-25.5,DECK))
-handrail('Stairs / top landing east',(-30.84,-25.5,DECK),(-30.84,-23,DECK))
-handrail('Stairs / landing inner',(-37.1,-23,DECK),(-35.16,-23,DECK))
-STAIR_WIDTH=2.3
+# User-confirmed stair direction: west/up from the internal left door, U-turn, east/up to bridge.
+# The bridge end itself is the upper landing, avoiding a second ground-level turn.
+box('Stairs / upper landing',(-33,-28,DECK-.17),(4.4,2,.34),ROOF)
+box('Stairs / upper landing pavers',(-33,-28,DECK+.016),(4.3,2,.03),PAVER)
+handrail('Stairs / upper landing front',(-35.16,-29,DECK),(-30.84,-29,DECK))
+handrail('Stairs / upper landing east',(-30.84,-29,DECK),(-30.84,-27,DECK))
+handrail('Stairs / upper landing west tip',(-35.16,-29,DECK),(-35.16,-28.8,DECK))
+STAIR_WIDTH=1.8
 rise=(DECK-.08)/28
 run=.34
-mid=DECK-14*rise
-# top flight runs toward the facade; lower flight returns toward the courtyard.
-for flight,cx,y0,direction,top in ((0,-38.25,-23,1,DECK),(1,-41.0,-18.24,-1,mid)):
+mid=.08+14*rise
+for flight,start_x,y0,direction,base in (('lower',-35.2,-30.65,-1,.08),('upper',-39.96,-27.9,1,mid)):
     for i in range(14):
-        z=top-(i+1)*rise
-        y=y0+direction*(i+.5)*run
-        box('Stairs / concrete treads',(cx,y,z-.09),(STAIR_WIDTH,run,.18),ROOF)
-        box('Stairs / anti-slip tread faces',(cx,y,z+.013),(STAIR_WIDTH-.05,run-.015,.024),PAVER)
-        box('Stairs / bright tread nosings',(cx,y-direction*(run/2-.035),z+.035),(STAIR_WIDTH-.05,.045,.018),METAL)
+        h=base+(i+1)*rise
+        x=start_x+direction*(i+.5)*run
+        box('Stairs / concrete treads / '+flight+' flight',(x,y0,h-.09),(run,STAIR_WIDTH,.18),ROOF)
+        box('Stairs / anti-slip treads / '+flight+' flight',(x,y0,h+.013),(run-.015,STAIR_WIDTH-.05,.024),PAVER)
+        box('Stairs / bright tread nosings',(x-direction*(run/2-.035),y0,h+.035),(.045,STAIR_WIDTH-.05,.018),METAL)
     for edge in (-1,1):
-        x=cx+edge*(STAIR_WIDTH/2+.03)
-        handrail('Stairs / sloping stainless rails',(x,y0,top),(x,y0+direction*14*run,top-14*rise))
-        tube('Stairs / structural stringers',(x,y0,top-.27),(x,y0+direction*14*run,top-14*rise-.27),.095,DARK,8)
-box('Stairs / return landing',(-39.62,-17.5,mid-.16),(5.1,1.48,.32),ROOF)
-box('Stairs / return landing pavers',(-39.62,-17.5,mid+.016),(5.05,1.44,.03),PAVER)
-handrail('Stairs / return outer rail',(-42.17,-16.76,mid),(-37.07,-16.76,mid))
-for x in (-42,-37.3):
-    box('Stairs / landing support legs',(x,-17.45,(mid-.32)/2),(.30,.35,mid-.32),METAL)
-box('Stairs / ground landing',(-41,-23.8,.04),(2.8,1.7,.08),ROOF)
-# Keep stairwell separated from road traffic with yellow/black protection posts.
-for x in (-43,-39):
-    box('Stairs / protection bollards',(x,-25,.53),(.32,.32,1.06),YELLOW)
-    for z in (.25,.65):
-        box('Stairs / bollard bands',(x,-25,z),(.34,.34,.14),DARK)
+        y=y0+edge*(STAIR_WIDTH/2+.03)
+        handrail('Stairs / sloping stainless rails',(start_x,y,base),(start_x+direction*14*run,y,base+14*rise))
+        tube('Stairs / structural stringers',(start_x,y,base-.24),(start_x+direction*14*run,y,base+14*rise-.24),.095,DARK,8)
+# One intermediate return platform joins both flights at the west end.
+box('Stairs / return landing',(-40.88,-29.275,mid-.16),(1.84,4.65,.32),ROOF)
+box('Stairs / return landing pavers',(-40.88,-29.275,mid+.016),(1.80,4.60,.03),PAVER)
+handrail('Stairs / return west guard',(-41.8,-31.6,mid),(-41.8,-26.95,mid))
+handrail('Stairs / return front guard',(-41.8,-31.6,mid),(-39.96,-31.6,mid))
+handrail('Stairs / return rear guard',(-41.8,-26.95,mid),(-39.96,-26.95,mid))
+for y in (-31.3,-27.3):
+    box('Stairs / landing support legs',(-41.45,y,(mid-.32)/2),(.30,.35,mid-.32),METAL)
+# Short level threshold immediately after the booth's left door; first riser is next to it.
+box('Stairs / ground landing',(-34.7,-30.65,.04),(1.0,1.8,.08),ROOF)
 
-
-# Put the stair block six metres outside the vehicle corridor, keeping the bridge above it.
-for (part,material),(verts,faces) in geometry.items():
-    if part.startswith('Stairs /'):
-        verts[:]=[(x,y-6,z) for x,y,z in verts]
 
 # Ground-level bridge structure and rear transfer hall, from the two new photos.
 # Blender coordinates: front yard negative Y; transfer hall extends behind office to +Y.
@@ -719,8 +712,8 @@ for y,length in ((-32.18,1.79),(-29.99,.12)):
 for y in (-31.25,-30.05):
     box('Entrance / internal left door jambs',(-34.06,y,1.35),(.10,.075,2.7),TRIM)
 box('Entrance / internal left door lintel',(-34.06,-30.65,2.72),(.10,1.28,.09),TRIM)
-box('Entrance / internal left door open leaf',(-34.63,-31.25,1.35),(1.2,.055,2.55),GLASS_DARK)
-box('Entrance / internal left door handle',(-34.83,-31.19,1.25),(.27,.045,.04),METAL)
+box('Entrance / internal left door open leaf',(-33.40,-31.25,1.35),(1.2,.055,2.55),GLASS_DARK)
+box('Entrance / internal left door handle',(-33.20,-31.19,1.25),(.27,.045,.04),METAL)
 box('Entrance / guard desk',(-30.65,-31.8,.86),(.65,1.35,.13),DARK)
 box('Entrance / guard booth roof',(GX,GY,2.96),(4.7,3.92,.28),TEAL)
 box('Entrance / booth roof cap',(GX,GY,3.13),(4.85,4.07,.06),METAL)
@@ -738,7 +731,7 @@ for x in (-42.4,-41,-39.6,-38.2,-36.8):
 for y in (-32.5,-31,-29.5,-28,-26.5,-25,-23.5):
     box('Entrance / west panel vertical joints',(-42.515,y,3.75),(.025,.022,7.48),PANELJOINT)
 # Exit cage occupies only the middle cell. Behind it, the booth's west door opens to the stairs.
-TX,TY=-35.35,-32.0
+TX,TY=-35.35,-32.7
 for x in (-36.55,-34.15):
     box('Entrance / turnstile side partition',(x,TY,1.15),(.08,2.20,2.3),METAL)
 # Cut open front and rear of the cage; side grids prevent bypassing the rotor.
@@ -755,8 +748,8 @@ for k in range(3):
     a=k*math.tau/3+.20
     for z in (.30,.62,.94,1.26,1.58,1.90):
         tube('Entrance / rotor radial bars',(TX,TY,z),(TX+.76*math.cos(a),TY+.76*math.sin(a),z),.022,METAL,6)
-box('Entrance / exit crown sign',(TX,-33.13,2.35),(2.25,.08,.28),TEAL)
-text('Entrance / one-way exit label','单向出口' if FONT else 'EXIT ONLY',(TX,-33.19,2.35),.21,WHITE,font=FONT)
+box('Entrance / exit crown sign',(TX,-33.60,2.35),(2.25,.08,.28),TEAL)
+text('Entrance / one-way exit label','单向出口' if FONT else 'EXIT ONLY',(TX,-33.66,2.35),.21,WHITE,font=FONT)
 # Rails separate the incoming front door and outgoing turnstile queue.
 handrail('Entrance / entry exit queue divider',(-34.10,-33.3,.02),(-34.10,-39.0,.02))
 # Outside entry marking leads straight into the booth; the left turn happens INSIDE.

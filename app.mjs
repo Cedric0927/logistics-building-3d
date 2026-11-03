@@ -44,7 +44,7 @@ function makeCirculationOverlay(){
     ['出：下楼→单向门',[-40.5,3.8,35],5.5,'#a85e1f'],
     ['车：桥下通行',[-32,2.2,15],6,'#246b96']
   ])circulationOverlay.add(label(title,pos,width,color));
-  for(const [a,b,color] of [[[-34.2,.3,30.65],[-37,.3,30.65],0x22a96b],[[-35.47,.3,34],[-35.47,.3,37],0xe68b25],[[-35,.3,16.2],[-30,.3,16.2],0x208ed0]]){
+  for(const [a,b,color] of [[[-34.2,.3,30.65],[-37,1.3,30.65],0x22a96b],[[-35.47,.3,34],[-35.47,.3,37],0xe68b25],[[-35,.3,16.2],[-30,.3,16.2],0x208ed0]]){
     const start=new THREE.Vector3(...a),direction=new THREE.Vector3(...b).sub(start),arrow=new THREE.ArrowHelper(direction.clone().normalize(),start,direction.length(),color,.55,.3);circulationOverlay.add(arrow);
   }
   circulationOverlay.visible=false;
