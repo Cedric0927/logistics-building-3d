@@ -613,7 +613,7 @@ for i in range(58):
 text('Warehouse / SF side sign','SF EXPRESS',(32.30,44.2,8.65),.95,DARK,rotation=(math.pi/2,0,math.pi/2))
 text('Warehouse / Chinese side sign','顺丰速运' if FONT else 'TRANSFER HALL',(32.32,44.2,7.68),.54,DARK,rotation=(math.pi/2,0,math.pi/2),font=FONT)
 
-# Bridge pier pads, longitudinal beam flanges and a ground-service enclosure.
+# Bridge pier pads and longitudinal beam flanges.
 for y in (-10.5,-16.5,-22.8):
     for x in (-34.85,-31.15):
         box('Bridge / pier foundation pads',(x,y,.11),(1.0,1.05,.22),ROOF)
@@ -622,9 +622,6 @@ for x in (-34.70,-31.30):
     box('Bridge / steel longitudinal beam webs',(x,-15.5,4.14),(.10,14.8,.38),DARK)
     for z in (3.94,4.34):
         box('Bridge / longitudinal beam flanges',(x,-15.5,z),(.28,14.8,.055),METAL)
-box('Bridge / ground service enclosure',(-33.05,-10.5,1.32),(3.0,3.25,2.64),TILE)
-box('Bridge / service enclosure door',(-33.05,-12.16,1.15),(1.2,.08,2.2),GLASS_DARK)
-box('Bridge / service enclosure coping',(-33.05,-10.5,2.72),(3.15,3.4,.16),METAL)
 
 # Right-side circulation yard: drainage channel, crossing and separated parking bays.
 for y in range(-20,60,7):
@@ -676,6 +673,143 @@ for i,y in enumerate((0,9,19,32,45)):
         shrub=bpy.context.object;shrub.name='EastYard / planted shrub '+str(i)+' '+str(j)
         shrub.scale=(.62,.77,.83);shrub.data.materials.append(materials[LEAF])
 
+# Front approach and guard booth, based on the new ground-floor front photograph.
+# Left pedestrian branch reaches the existing stair foot; the vehicle lane stays to its right.
+BOOTH=mat('Guard booth warm aluminum panels',(.60,.63,.57),.45,.32)
+TRIM=mat('Guard booth bronze window frames',(.45,.34,.17),.4,.50)
+TEAL=mat('Parking canopy painted steel',(.09,.23,.24),.53,.35)
+PANEL=mat('Stair enclosure silver sheet panels',(.53,.65,.68),.5,.38)
+PANELJOINT=mat('Stair enclosure panel joints',(.30,.42,.45),.66,.2)
+CARBLUE=mat('Visitor car blue-gray paint',(.12,.25,.32),.3,.52)
+CARSILVER=mat('Visitor car silver paint',(.54,.61,.61),.29,.60)
+
+# Extend only the photographed approach, leaving the earlier main courtyard intact.
+box('Entrance / apron foundation',(-30,-47,-.22),(60,35,.42),GROUND)
+# Guard booth offset to the right of the stairwell, with the drive-through lane beside it.
+GX,GY=-29.2,-33.0
+box('Entrance / guard booth floor',(GX,GY,.11),(4.0,3.2,.22),ROOF)
+box('Entrance / guard booth lower panels',(GX,GY,.56),(3.95,3.15,.88),BOOTH)
+box('Entrance / guard booth glazing',(GX,GY,1.83),(3.88,3.08,1.70),GLASS)
+for x in (GX-1.98,GX+1.98):
+    for y in (GY-1.58,GY+1.58):
+        box('Entrance / booth corner posts',(x,y,1.48),(.11,.11,2.90),TRIM)
+for y in (GY-1.60,GY+1.60):
+    for z in (.98,2.68):
+        box('Entrance / booth window horizontal frames',(GX,y,z),(4.05,.10,.08),TRIM)
+    for x in (GX-1.06,GX+.40):
+        box('Entrance / booth window mullions',(x,y,1.82),(.075,.10,1.77),TRIM)
+for x in (GX-2.01,GX+2.01):
+    box('Entrance / booth side mullions',(x,GY,1.82),(.10,.075,1.77),TRIM)
+    for z in (.98,2.68):
+        box('Entrance / booth side frames',(x,GY,z),(.10,3.25,.08),TRIM)
+box('Entrance / guard booth roof',(GX,GY,2.96),(4.7,3.92,.28),TEAL)
+box('Entrance / booth roof cap',(GX,GY,3.13),(4.85,4.07,.06),METAL)
+box('Entrance / booth front door',(GX-.33,GY-1.66,1.38),(1.35,.055,2.50),GLASS_DARK)
+for x in (GX-1.04,GX+.38):
+    box('Entrance / booth door frame',(x,GY-1.71,1.39),(.07,.07,2.58),TRIM)
+tube('Entrance / booth door handle',(GX+.20,GY-1.78,1.15),(GX+.20,GY-1.78,1.55),.023,METAL,8)
+box('Entrance / booth sign backing',(GX,GY-1.99,2.95),(2.3,.045,.26),WHITE)
+text('Entrance / guard booth sign','门卫' if FONT else 'GUARD',(GX,GY-2.02,2.95),.21,DARK,font=FONT)
+# Removable ramp/threshold at the booth door, not a pedestrian barrier.
+box('Entrance / booth threshold',(GX-.33,GY-1.89,.08),(1.55,.48,.16),DARK)
+
+# Silver panel enclosure on the stairwell side and back. Keep its foot and approach open.
+# The photographed panels obscure the tread arrangement, which remains provisional.
+box('Entrance / stair enclosure west panels',(-42.43,-21.0,3.75),(.14,8.1,7.5),PANEL)
+box('Entrance / stair enclosure rear panels',(-39.65,-16.82,3.75),(5.7,.14,7.5),PANEL)
+for z in (1.45,2.95,4.45,5.95,7.45):
+    box('Entrance / west panel horizontal joints',(-42.515,-21,z),(.025,8.12,.022),PANELJOINT)
+    box('Entrance / rear panel horizontal joints',(-39.65,-16.91,z),(5.7,.025,.022),PANELJOINT)
+for y in (-24.5,-23,-21.5,-20,-18.5,-17):
+    box('Entrance / west panel vertical joints',(-42.515,y,3.75),(.025,.022,7.48),PANELJOINT)
+for x in (-42.4,-41,-39.6,-38.2,-36.8):
+    box('Entrance / rear panel vertical joints',(x,-16.91,3.75),(.022,.025,7.48),PANELJOINT)
+# Stair-foot handrails guide the left turn without closing the 2.4m stair access.
+handrail('Entrance / left pedestrian outer rail',(-44,-35,.03),(-44,-27,.03))
+
+# Long ladder-pattern pedestrian strip in the photograph.
+for x in (-35.65,-33.45):
+    box('Entrance / pedestrian continuous edges',(x,-48.7,.021),(.14,24.4,.028),LINE)
+for i in range(10):
+    box('Entrance / pedestrian ladder rungs',(-34.55,-60.3+i*2.5,.022),(2.25,.13,.028),LINE)
+# Left branch past the booth, then towards the stair bottom (-41,-23.8).
+for y in (-36.4,-34.3):
+    box('Entrance / left-turn path edges',(-38,y,.023),(6.85,.12,.028),LINE)
+for x in (-42.05,-39.95):
+    box('Entrance / stair approach edges',(x,-29.65,.023),(.12,9.3,.028),LINE)
+# Vehicle lane goes straight past the right side of the booth to the office courtyard.
+for x in (-26.3,-19.7):
+    box('Entrance / vehicle lane edges',(x,-45,.021),(.14,32,.028),LINE)
+for y in (-56,-43):
+    box('Entrance / forward vehicle arrows',(-23,y,.026),(.20,2.4,.03),LINE)
+    poly('Entrance / forward vehicle arrows',LINE,[(-23.70,y+.65,.043),(-22.30,y+.65,.043),(-23,y+1.60,.043)],[(0,1,2)])
+# Turn indicator at the pedestrian junction.
+box('Entrance / left pedestrian arrow',(-37.4,-35.35,.028),(1.6,.16,.03),LINE)
+poly('Entrance / left pedestrian arrow',LINE,[(-38.8,-35.35,.046),(-37.9,-35.95,.046),(-37.9,-34.75,.046)],[(0,1,2)])
+
+# Blue/white mesh boundary and open gate beside the booth, with clear road aperture.
+for k,(a,b,colour) in enumerate(((-19.0,-12.0,BLUE),(-12.0,-4.0,WHITE))):
+    for x in (a,b):
+        box('Entrance / mesh fence posts',(x,-33.0,1.13),(.10,.10,2.26),colour)
+    for z in (.15,2.2):
+        tube('Entrance / mesh fence horizontal rails',(a,-33,z),(b,-33,z),.025,colour,6)
+    count=math.ceil((b-a)/.20)
+    for i in range(count+1):
+        x=a+(b-a)*i/count
+        tube('Entrance / mesh fence wires',(x,-33,.15),(x,-33,2.2),.012,colour,5)
+# Gate leaf folds along the lane edge rather than blocking the straight drive.
+for y in (-33,-37.2):
+    box('Entrance / open gate frame',(-19,y,1.12),(.10,.10,2.24),BLUE)
+for z in (.16,2.15):
+    tube('Entrance / open gate rails',(-19,-33,z),(-19,-37.2,z),.026,BLUE,6)
+for i in range(22):
+    y=-33-i*.2
+    tube('Entrance / open gate mesh',(-19,y,.16),(-19,y,2.15),.012,BLUE,5)
+# Barrier arm is raised; the inbound route remains unobstructed.
+box('Entrance / barrier operator',(-26.85,-31.3,.60),(.45,.46,1.2),BOOTH)
+box('Entrance / raised barrier arm',(-26.85,-31.3,2.83),(.10,.10,3.50),WHITE)
+for z in (1.35,2.05,2.75,3.45,4.15):
+    box('Entrance / barrier red stripes',(-26.85,-31.3,z),(.115,.115,.23),RED)
+
+# Steel parking canopies on both sides of the approach.
+def parking_canopy(name,x0,x1,y0,y1):
+    roof=[(x0,y0,3.45),(x1,y0,3.13),(x1,y1,3.13),(x0,y1,3.45)]
+    poly(name+' / roof',TEAL,roof,[(0,1,2,3),(3,2,1,0)])
+    for x,z in ((x0,3.45),(x1,3.13)):
+        box(name+' / longitudinal eaves',(x,(y0+y1)/2,z),(.13,y1-y0+.2,.18),TEAL)
+        for y in (y0+.2,y0+7,y0+14,y0+21,y1-.2):
+            box(name+' / steel columns',(x,y,z/2),(.13,.13,z),TEAL)
+            tube(name+' / column knee braces',(x,y,z-.65),(x+(1 if x==x0 else -1)*.7,y,z-.05),.035,TEAL,6)
+    for i in range(math.ceil((y1-y0)/.65)+1):
+        y=y0+i*.65
+        tube(name+' / corrugated roof seams',(x0,y,3.47),(x1,y,3.15),.018,METAL,5)
+    for y in range(int(y0)+2,int(y1),5):
+        box(name+' / parking bay stripes',((x0+x1)/2,y,.022),(x1-x0-.4,.08,.028),LINE)
+parking_canopy('Entrance / west parking canopy',-55,-45,-59,-31)
+parking_canopy('Entrance / east parking canopy',-13,-5,-59,-35)
+
+# Simple passenger cars for the photographed parking rows; no people/registration details.
+def visitor_car(name,x,y,paint,angle=math.pi/2):
+    def p(a,b,c):return (x+a*math.cos(angle)-b*math.sin(angle),y+a*math.sin(angle)+b*math.cos(angle),c)
+    def cb(part,c,size,material):box(name+' / '+part,p(*c),size,material,angle)
+    cb('lower body',(0,0,.66),(1.82,4.35,.62),paint)
+    cb('bonnet',(0,-1.64,.98),(1.76,1.02,.15),paint)
+    cb('rear deck',(0,1.65,.96),(1.76,.86,.17),paint)
+    verts=[p(a,b,c) for a,b,c in [(-.83,-1.12,.94),(.83,-1.12,.94),(.83,1.23,.94),(-.83,1.23,.94),(-.70,-.58,1.50),(.70,-.58,1.50),(.70,.74,1.50),(-.70,.74,1.50)]]
+    poly(name+' / sloped cabin',paint,verts,[(0,1,5,4),(1,2,6,5),(2,3,7,6),(3,0,4,7),(4,5,6,7)])
+    poly(name+' / windscreen',GLASS_DARK,[p(-.72,-1.08,1.00),p(.72,-1.08,1.00),p(.62,-.59,1.47),p(-.62,-.59,1.47)],[(0,1,2,3)])
+    for side in (-1,1):
+        poly(name+' / side glazing',GLASS_DARK,[p(side*.842,-.95,1.02),p(side*.842,1.07,1.02),p(side*.712,.71,1.46),p(side*.712,-.56,1.46)],[(0,1,2,3),(3,2,1,0)])
+        for by in (-1.30,1.32):
+            tube(name+' / tyres',p(side*.81,by,.43),p(side*1.00,by,.43),.36,TYRE,16)
+            tube(name+' / wheel rims',p(side*1.005,by,.43),p(side*1.025,by,.43),.22,RIM,12)
+    cb('front grille',(0,-2.20,.67),(1.2,.035,.22),DARK)
+    for xx in (-.65,.65):cb('headlamps',(xx,-2.20,.88),(.36,.045,.19),WHITE)
+for i,(y,paint) in enumerate(((-55,CARBLUE),(-49,CARSILVER),(-43,WHITE),(-37,CARBLUE))):
+    visitor_car('Entrance / west parked car '+str(i+1),-49.6,y,paint)
+visitor_car('Entrance / east parked car',-9.2,-50,WHITE,angle=-math.pi/2)
+
+
 # Build batched, named meshes. World-space planar UVs keep tile density consistent.
 for (name,material),(verts,faces) in geometry.items():
     mesh=bpy.data.meshes.new(name)
@@ -712,12 +846,12 @@ for obj in list(bpy.context.scene.objects):
         bpy.context.view_layer.objects.active=obj
         bpy.ops.object.convert(target='MESH')
 
-bpy.ops.object.camera_add(location=(-135,-157,114))
+bpy.ops.object.camera_add(location=(-135,-170,125))
 cam=bpy.context.object
 cam.name='Camera / photographed facade overview'
-cam.rotation_euler=(Vector((-28,16,6))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.rotation_euler=(Vector((-27,2,6))-cam.location).to_track_quat('-Z','Y').to_euler()
 cam.data.type='ORTHO'
-cam.data.ortho_scale=187
+cam.data.ortho_scale=215
 bpy.context.scene.camera=cam
 bpy.ops.object.light_add(type='AREA',location=(-45,-35,65))
 bpy.context.object.data.energy=80000
@@ -740,13 +874,13 @@ scene.render.resolution_percentage=100
 scene.view_settings.view_transform='AgX'
 scene.render.image_settings.file_format='PNG'
 scene.render.filepath=str(ROOT/'building-preview.png')
-scene['reference_note']='Five user photos: office wings and bridge, ground bridge and east side. Added east office windows, rear corrugated transfer hall, side canopy and security fencing. Rear hall extent, roof and hidden elevations inferred; not a survey model.'
+scene['reference_note']='Six user photos: office wings and bridge, ground bridge, east side and front guard booth. Added east office windows, rear corrugated transfer hall, side canopy and security fencing. Rear hall extent, roof and hidden elevations inferred; not a survey model.'
 bpy.ops.object.select_all(action='DESELECT')
 bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg'],'bridgeDeckMeters':4.7,'stairRisers':28,'layoutNote':'Front approach passes guard booth on its right; pedestrian path turns left to stair foot. Stair tread arrangement remains provisional behind photographed cladding.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
@@ -769,3 +903,12 @@ scene.render.resolution_y=1000
 scene.render.filepath=str(ROOT/'warehouse-preview.png')
 bpy.ops.render.render(write_still=True)
 print('WAREHOUSE_RENDERED',flush=True)
+
+cam.location=(-22,-75,29)
+cam.rotation_euler=(Vector((-32,-32,3.8))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=62
+scene.render.resolution_x=1440
+scene.render.resolution_y=1100
+scene.render.filepath=str(ROOT/'entrance-preview.png')
+bpy.ops.render.render(write_still=True)
+print('ENTRANCE_RENDERED',flush=True)

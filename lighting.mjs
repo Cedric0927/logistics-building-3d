@@ -50,6 +50,12 @@ export function createLighting(scene,renderer,stage){
     body([.25,.08,2.6],[34.1,4.14,z],steel);glow([.19,.025,2.4],[34.1,4.085,z],0xffdda2);
     const p=powered(new THREE.PointLight(0xffe0b8,0,16,2),85);p.position.set(34.3,3.9,z);fixtures.add(p);
   }
+  // Guard booth and both parking canopies, separate from the truck headlights.
+  for(const [x,z] of [[-29.2,34.7],[-49.5,43],[-49.5,54],[-9,46],[-9,55]]){
+    const height=x===-29.2?2.78:2.95;
+    body([1.1,.055,.14],[x,height,z],steel);glow([1,.022,.10],[x,height-.04,z],0xffe8bf);
+    const p=powered(new THREE.PointLight(0xffe6bc,0,10,2),30);p.position.set(x,height-.16,z);fixtures.add(p);
+  }
   let lastHour=NaN;
   function bindTruck(root){
     for(const x of [-1.02,1.02]){

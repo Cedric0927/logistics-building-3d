@@ -1,17 +1,18 @@
 {
-  "meshObjects": 436,
-  "triangles": 215608,
-  "glbBytes": 11706564,
+  "meshObjects": 539,
+  "triangles": 224463,
+  "glbBytes": 12319036,
   "sourcePhoto": "reference.jpg",
   "additionalPhotos": [
     "reference-right-bridge.jpg",
     "reference-left-bridge.jpg",
     "reference-ground-bridge.jpg",
-    "reference-right-warehouse.jpg"
+    "reference-right-warehouse.jpg",
+    "reference-front-entrance.jpg"
   ],
   "bridgeDeckMeters": 4.7,
   "stairRisers": 28,
-  "layoutNote": "Left and right wings connected by central rounded entrance; switchback stair arrangement inferred from partial views.",
+  "layoutNote": "Front approach passes guard booth on its right; pedestrian path turns left to stair foot. Stair tread arrangement remains provisional behind photographed cladding.",
   "estimatedDimensionsMeters": {
     "frontage": 135,
     "mainDepth": 12,

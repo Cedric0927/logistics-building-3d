@@ -1,12 +1,26 @@
 # 物流站 · 建筑外观与装卸作业模拟
 
-根据原始建筑照片及后续四张现场照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
+根据原始建筑照片及后续五张现场照片制作的三维外观模型，以及可交互的物流装卸示意动画。包含本地运行的网页、GLB 模型、Blender 源文件和生成脚本。
 
 货车已按用户提供的顺丰实车照片精修：黑色厢式车身、导流罩、倾斜风挡、竖向灯组、轮胎纹路、轮毂螺母、门锁五金，以及 SF / 顺丰速运 / SF EXPRESS 标识、红色横线与反光条。传送带包含滚筒、三级套接框架、驱动电机、调平支脚、急停及控制盒。
 
 ![精修货车与传送带](equipment-preview.png)
 
 ![建筑模型预览](building-preview.png)
+
+## 新增正面保安亭与入口动线
+
+按正面一楼照片 `reference-front-entrance.jpg`，并结合用户说明补建入口：
+
+- 保安亭位于天桥前方，人行通道到亭前左转，再接入楼梯底部；亭右侧保留直行车道，通向办公楼前的作业场院。
+- 两侧钢结构停车雨棚、简化停放轿车、长条梯格人行标线、车道边线与箭头、蓝白网片围栏和沿路边折起的门扇。
+- 道闸按抬起状态展示，使车道保持贯通。货车从新车道驶入，完全通过保安亭后再转向原有 07 号月台，装卸阶段仍沿用原来的时序。
+- 用新增保安亭取代上一版暂定的桥下服务小房，并在楼梯侧面及背面补银灰色围护板；留出正面楼梯开口。照片未显示完整踏步，暂保留原先两段折返形式，不据被遮挡的照片推定圆形螺旋踏步。
+- 新增“保安亭与入口”“正面入场”视角；夜间保安亭及停车雨棚随已有昼夜系统亮灯。
+
+保安亭、停车雨棚的尺寸和相对距离仍为照片近似，标识仅示意值守用途。入口只做外观与动线展示，未模拟人员检查或道闸运转。
+
+![保安亭与入口动线](entrance-preview.png)
 
 ## 新增右侧与后方中转库房
 
@@ -95,7 +109,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `loop` | `1` | 0 为只播放一轮 |
 | `time` | `0` | 初始作业秒数，0–80；40 为卸货阶段 |
 | `speed` | `1` | 作业速度，0.25–4 |
-| `view` | `overview` | overview / right / left / bridge / ground / warehouse / dock / truck / equipment / top |
+| `view` | `overview` | overview / right / left / bridge / ground / warehouse / entrance / approach / dock / truck / equipment / top |
 | `autoLight` | `0` | 1 开启自动昼夜 |
 | `interactive` | `1` | 0 禁止鼠标操作，仅播放画面 |
 
@@ -117,7 +131,7 @@ React JSX 中将 style 换为 `style={{ width: '100%', height: 600, border: 0 }}
 | `create-equipment.py` | Blender 精修设备生成脚本 |
 | `equipment-preview.png` / `equipment-info.json` | 设备渲染及规模说明 |
 | `building.html` | 原始静态建筑查看器 |
-| `logistics-building.glb` | 约 11.7 MB 的网页模型，内嵌贴图 |
+| `logistics-building.glb` | 约 12.3 MB 的网页模型，内嵌贴图 |
 | `logistics-building.blend` | 可编辑 Blender 源文件 |
 | `reference.jpg` | 用户提供的建模参考照片 |
 | `building-preview.png` | 模型渲染预览 |

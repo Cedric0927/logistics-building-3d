@@ -62,3 +62,19 @@ test('departing truck clears new east-yard entrance barriers',()=>{
     assert(truck.x+halfX<39.5,'Truck intersects east-yard entrance at '+t);
   }
 });
+
+test('inbound truck uses the booth drive-through and clears entrance furniture',()=>{
+  assert.equal(sample(0).truck.x,-23);assert.equal(sample(0).truck.z,56);
+  const obstacles=[
+    {name:'guard booth',x0:-31.2,x1:-27.2,z0:31.4,z1:34.6},
+    {name:'raised barrier base',x0:-27.08,x1:-26.62,z0:31.05,z1:31.55},
+    {name:'folded gate',x0:-19.08,x1:-18.92,z0:32.9,z1:37.3},
+    {name:'east parking canopy',x0:-13.1,x1:-4.9,z0:34.9,z1:59.1},
+    {name:'west parking canopy',x0:-55.1,x1:-44.9,z0:30.9,z1:59.1}
+  ];
+  for(let t=0;t<=10;t+=.025){
+    const {truck}=sample(t),c=Math.abs(Math.cos(truck.yaw)),s=Math.abs(Math.sin(truck.yaw));
+    const hx=c*1.5+s*4.6,hz=s*1.5+c*4.6;
+    for(const o of obstacles)assert(truck.x+hx<o.x0||truck.x-hx>o.x1||truck.z+hz<o.z0||truck.z-hz>o.z1,'Truck overlaps '+o.name+' at '+t);
+  }
+});
