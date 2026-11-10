@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 from collections import defaultdict
-from mathutils import Vector
+from mathutils import Vector, Matrix
 
 ROOT = Path(__file__).resolve().parent
 random.seed(19)
@@ -637,8 +637,8 @@ for y in (0,20,40,57):
 for x,y,w,d in ((42,-21,4.2,1.1),(46,-6,3,1.8),(40,46,2.8,2.1)):
     box('EastYard / repaired paving',(x,y,.012),(w,d,.018),ASPHALT)
 
-# East fence is interrupted at both photographed access openings.
-for ya,yb in ((-13,36),(54,64)):
+# East service-yard boundary remains closed; both public gates are on the front.
+for ya,yb in ((-20,64),):
     for y in range(ya,yb+1,3):
         tube('Security / east fence posts',(50,y,.05),(50,y,2.65),.055,FENCE,8)
         box('Security / red post caps',(50,y,2.70),(.13,.13,.10),RED)
@@ -657,7 +657,7 @@ for x in (40,49):
     box('Security / entrance yellow blocks',(x,-24,.48),(1.0,.65,.96),YELLOW)
     for z in (.28,.65):
         box('Security / entrance black bands',(x,-24,z),(1.03,.68,.18),DARK)
-# Gate 1 approach remains open between the protective blocks.
+handrail('Security / low entry guardrail',(40.6,-24,.04),(48.4,-24,.04))
 
 
 # Small planted containers visible along the service-yard boundary.
@@ -828,18 +828,19 @@ for i,(y,paint) in enumerate(((-55,CARBLUE),(-49,CARSILVER),(-43,WHITE),(-37,CAR
 visitor_car('Entrance / east parked car',-9.2,-50,WHITE,angle=-math.pi/2)
 
 
-# Two photographed roadside gates: local u runs along the shared road,
-# local v points into the campus. Distances and gate spacing are provisional.
+# Two front roadside gates: construct in reusable local frontage coordinates,
+# then rotate the entire assembly to face the office facade (negative Y).
+# Gate spacing and road setback remain provisional.
 ROAD=mat('Roadside asphalt',(.19,.205,.21),.96)
 CURB=mat('Roadside pale kerb',(.64,.65,.61),.9)
 BARK=mat('Roadside tree bark',(.22,.16,.10),.95)
 FOLIAGE=[mat('Roadside foliage '+str(i),c,.95) for i,c in enumerate(((.22,.36,.09),(.38,.45,.10),(.16,.31,.12)))]
-box('Roadside / shared external road',(69,17,-.13),(16,120,.24),ROAD)
-box('Roadside / campus verge',(56,17,-.14),(10,120,.3),GROUND)
-for y in range(-40,76,7):box('Roadside / yellow center dashes',(69,y,.012),(.14,3.6,.025),YELLOW)
-for x in (61.3,76.7):box('Roadside / continuous edge lines',(x,17,.012),(.13,120,.025),LINE)
+box('Roadside / shared external road',(69,0,-.13),(16,170,.24),ROAD)
+box('Roadside / campus verge',(56,0,-.14),(10,170,.3),GROUND)
+for y in range(-83,85,7):box('Roadside / yellow center dashes',(69,y,.012),(.14,3.6,.025),YELLOW)
+for x in (61.3,76.7):box('Roadside / continuous edge lines',(x,0,.012),(.13,170,.025),LINE)
 # Ground extension ties both gates into the existing east service lane.
-box('Roadside / internal gate approaches',(48,18,-.145),(12,100,.30),GROUND)
+# FrontAccess / continuous forecourt below supplies the gate approaches.
 
 def roadside_gate(number,cy):
     n='Gate'+str(number)
@@ -910,7 +911,7 @@ def roadside_gate(number,cy):
 roadside_gate(1,-23)
 roadside_gate(2,45)
 # Continuous roadside boundary between the two access openings.
-for ya,yb in ((-42,-37.5),(-8.5,30.5),(59.5,77)):
+for ya,yb in ((-85,-37.5),(-8.5,30.5),(59.5,85)):
     box('Roadside / boundary low wall',(54,(ya+yb)/2,.35),(.32,yb-ya,.7),TILE)
     for y in range(math.ceil(ya),math.floor(yb)+1,3):tube('Roadside / boundary posts',(54,y,.6),(54,y,2.5),.045,FENCE)
     for z in (.8,2.4):tube('Roadside / boundary rails',(54,ya,z),(54,yb,z),.026,FENCE)
@@ -924,6 +925,18 @@ for i,(x,y) in enumerate(((49,-38),(49,-8),(48,18),(47,58),(46,64))):
         tube('Roadside / tree branches',(x,y,4),(cx,cy,7),.065,BARK,7)
         bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=1,location=(cx,cy,7.4+(j%2)*.7))
         leaf=bpy.context.object;leaf.name='Roadside / tree canopy';leaf.scale=(1.8,1.8,2.8 if i>=3 else 2.1);leaf.data.materials.append(materials[FOLIAGE[i%3]])
+
+# Front frontage placement: local (x,y) -> world (y-25,-12-x).
+# Both gates now face the SAME side as the main office elevation.
+front_transform=Matrix(((0,1,0,-25),(-1,0,0,-12),(0,0,1,0),(0,0,0,1)))
+for (name,material),(verts,faces) in geometry.items():
+    if name.startswith(('Gate1 /','Gate2 /','Roadside /')):
+        verts[:]=[(y-25,-12-x,z) for x,y,z in verts]
+for obj in list(bpy.context.scene.objects):
+    if obj.name.startswith(('Gate1 /','Gate2 /','Roadside /')):
+        obj.matrix_world=front_transform @ obj.matrix_world
+# Connect the front access apron to the existing parking and office forecourt.
+box('FrontAccess / continuous forecourt',(-25,-48,-.145),(160,36,.30),GROUND)
 
 # Build batched, named meshes. World-space planar UVs keep tile density consistent.
 for (name,material),(verts,faces) in geometry.items():
@@ -966,7 +979,7 @@ cam=bpy.context.object
 cam.name='Camera / photographed facade overview'
 cam.rotation_euler=(Vector((-27,2,6))-cam.location).to_track_quat('-Z','Y').to_euler()
 cam.data.type='ORTHO'
-cam.data.ortho_scale=215
+cam.data.ortho_scale=235
 bpy.context.scene.camera=cam
 bpy.ops.object.light_add(type='AREA',location=(-45,-35,65))
 bpy.context.object.data.energy=80000
@@ -995,7 +1008,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg','reference-gate-1.jpg','reference-gate-2.jpg'],'bridgeDeckMeters':5.4,'stairRisers':28,'roadsideGates':{'axis':'east boundary; same north-south external road','centers':[[54,-23],[54,45]],'spacing':'provisional, not measured'},'layoutNote':'Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg','reference-gate-1.jpg','reference-gate-2.jpg'],'bridgeDeckMeters':5.4,'stairRisers':28,'roadsideGates':{'axis':'front boundary; same east-west road parallel to office facade','centers':[[-48,-66],[20,-66]],'spacing':'provisional, not measured'},'layoutNote':'Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
@@ -1029,9 +1042,9 @@ bpy.ops.render.render(write_still=True)
 print('ENTRANCE_RENDERED',flush=True)
 
 # Shared-road gate overview, exported model remains unchanged.
-cam.location=(153,-58,78)
-cam.rotation_euler=(Vector((48,15,3))-cam.location).to_track_quat('-Z','Y').to_euler()
-cam.data.ortho_scale=145
+cam.location=(-115,-174,95)
+cam.rotation_euler=(Vector((-25,-48,3))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=190
 scene.render.resolution_x=1500
 scene.render.resolution_y=1000
 scene.render.filepath=str(ROOT/'gates-preview.png')

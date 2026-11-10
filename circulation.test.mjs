@@ -73,15 +73,16 @@ test('left door immediately meets westbound first ascent and eastbound return as
 
 test('both roadside gates face one road and their vehicle channels cross the actual perimeter unobstructed',()=>{
   const road=part('Roadside / shared external road');
-  assert(road.min.x>60 && road.max.x>76);
-  for(const [gate,cy] of [[1,-23],[2,45]]){
+  assert(road.min.z>72 && road.max.z>88,'External road must be in front of the office, not beside it');
+  assert(road.min.x< -100 && road.max.x>=59,'Road must run parallel to the full front elevation');
+  for(const [gate,cx] of [[1,-48],[2,20]]){
     const crossing=part('Gate'+gate+' / zebra crossing');
-    assert(crossing.min.x>road.min.x-6 && crossing.max.x<road.min.x+1);
-    assert(-cy>road.min.z && -cy<road.max.z);
+    assert(crossing.min.z>road.min.z-6 && crossing.max.z<road.min.z+1);
+    assert(cx>road.min.x && cx<road.max.x);
     // Probe across both the old and new fence lines at truck-body height.
     const obstacles=parts.filter(p=>/^(Gate|Security)/.test(p.name));
     for(const offset of [2.7,4,5.3]){
-      const a=new THREE.Vector3(63,1.5,-cy-offset),ray=new THREE.Ray(a,new THREE.Vector3(-1,0,0));
+      const a=new THREE.Vector3(cx+offset,1.5,75),ray=new THREE.Ray(a,new THREE.Vector3(0,0,-1));
       for(const p of obstacles)for(const tri of p.triangles){
         const hit=ray.intersectTriangle(...tri,false,new THREE.Vector3());
         assert(!hit || hit.distanceTo(a)>19,'Gate '+gate+' vehicle channel blocked by '+p.name);

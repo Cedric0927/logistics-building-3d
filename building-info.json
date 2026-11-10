@@ -1,7 +1,7 @@
 {
-  "meshObjects": 680,
-  "triangles": 283832,
-  "glbBytes": 14727236,
+  "meshObjects": 682,
+  "triangles": 295660,
+  "glbBytes": 15511116,
   "sourcePhoto": "reference.jpg",
   "additionalPhotos": [
     "reference-right-bridge.jpg",
@@ -15,15 +15,15 @@
   "bridgeDeckMeters": 5.4,
   "stairRisers": 28,
   "roadsideGates": {
-    "axis": "east boundary; same north-south external road",
+    "axis": "front boundary; same east-west road parallel to office facade",
     "centers": [
       [
-        54,
-        -23
+        -48,
+        -66
       ],
       [
-        54,
-        45
+        20,
+        -66
       ]
     ],
     "spacing": "provisional, not measured"

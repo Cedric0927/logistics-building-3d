@@ -13,11 +13,11 @@ export function createLighting(scene,renderer,stage){
   function glow(size,pos,color,parent=fixtures){const mat=new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:0,roughness:.35});emissions.push(mat);return body(size,pos,mat,parent)}
   function powered(light,power){artificial.push({light,power});light.intensity=0;return light}
   // Roadside gate fascia lamps follow the existing day/night clock.
-  for(const z of [23,-45]){
-    body([.22,.12,2.2],[55.35,3.75,z],steel);
-    glow([.18,.045,2],[55.35,3.67,z],0xffdfb3);
+  for(const x of [-48,20]){
+    body([2.2,.12,.22],[x,3.75,67.35],steel);
+    glow([2,.045,.18],[x,3.67,67.35],0xffdfb3);
     const lamp=powered(new THREE.PointLight(0xffdfb3,0,16,2),110);
-    lamp.position.set(57,3.5,z);fixtures.add(lamp);
+    lamp.position.set(x,3.5,69);fixtures.add(lamp);
   }
   // Under-canopy strips; six shared pools light the twelve loading bays.
   for(let i=0;i<12;i++){
