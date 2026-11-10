@@ -637,29 +637,27 @@ for y in (0,20,40,57):
 for x,y,w,d in ((42,-21,4.2,1.1),(46,-6,3,1.8),(40,46,2.8,2.1)):
     box('EastYard / repaired paving',(x,y,.012),(w,d,.018),ASPHALT)
 
-# Photographed welded mesh fence and coiled wire along the east service yard.
-for y in range(-20,67,4):
-    tube('Security / east fence posts',(50,y,.05),(50,y,2.65),.055,FENCE,8)
-    tube('Security / inclined post tops',(50,y,2.55),(50.28,y,3.10),.035,FENCE,6)
-    box('Security / red post caps',(50,y,2.70),(.13,.13,.10),RED)
-for z in (.15,1.30,2.50):
-    tube('Security / east horizontal rails',(50,-20,z),(50,64,z),.025,FENCE,6)
-for i in range(384):
-    y=-20+i*.22
-    tube('Security / welded mesh uprights',(50,y,.15),(50,y,2.50),.009,FENCE,5)
-for i in range(14):
-    z=.18+i*.175
-    tube('Security / welded mesh horizontal wires',(50,-20,z),(50,64,z),.008,FENCE,5)
-for i in range(1260):
-    a=i*math.tau/18;b=(i+1)*math.tau/18
-    y=-20+i/15
-    tube('Security / coiled top wire',(50+.34*math.cos(a),y,2.90+.34*math.sin(a)),(50+.34*math.cos(b),y+1/15,2.90+.34*math.sin(b)),.012,WIRE,5)
+# East fence is interrupted at both photographed access openings.
+for ya,yb in ((-13,36),(54,64)):
+    for y in range(ya,yb+1,3):
+        tube('Security / east fence posts',(50,y,.05),(50,y,2.65),.055,FENCE,8)
+        box('Security / red post caps',(50,y,2.70),(.13,.13,.10),RED)
+    for z in (.15,1.3,2.5):tube('Security / east horizontal rails',(50,ya,z),(50,yb,z),.025,FENCE,6)
+    for i in range(int((yb-ya)/.22)):
+        y=ya+i*.22
+        tube('Security / welded mesh uprights',(50,y,.15),(50,y,2.5),.009,FENCE,5)
+    for i in range(14):
+        z=.18+i*.175
+        tube('Security / welded mesh horizontal wires',(50,ya,z),(50,yb,z),.008,FENCE,5)
+    for i in range(int((yb-ya)*15)):
+        a=i*math.tau/18;b=(i+1)*math.tau/18;y=ya+i/15
+        tube('Security / coiled top wire',(50+.34*math.cos(a),y,2.9+.34*math.sin(a)),(50+.34*math.cos(b),y+1/15,2.9+.34*math.sin(b)),.012,WIRE,5)
 # Guardrails and warning blocks at the yard entrance, leaving the animated truck lane clear.
 for x in (40,49):
     box('Security / entrance yellow blocks',(x,-24,.48),(1.0,.65,.96),YELLOW)
     for z in (.28,.65):
         box('Security / entrance black bands',(x,-24,z),(1.03,.68,.18),DARK)
-handrail('Security / low entry guardrail',(40.6,-24,.04),(48.4,-24,.04))
+# Gate 1 approach remains open between the protective blocks.
 
 
 # Small planted containers visible along the service-yard boundary.
@@ -830,6 +828,103 @@ for i,(y,paint) in enumerate(((-55,CARBLUE),(-49,CARSILVER),(-43,WHITE),(-37,CAR
 visitor_car('Entrance / east parked car',-9.2,-50,WHITE,angle=-math.pi/2)
 
 
+# Two photographed roadside gates: local u runs along the shared road,
+# local v points into the campus. Distances and gate spacing are provisional.
+ROAD=mat('Roadside asphalt',(.19,.205,.21),.96)
+CURB=mat('Roadside pale kerb',(.64,.65,.61),.9)
+BARK=mat('Roadside tree bark',(.22,.16,.10),.95)
+FOLIAGE=[mat('Roadside foliage '+str(i),c,.95) for i,c in enumerate(((.22,.36,.09),(.38,.45,.10),(.16,.31,.12)))]
+box('Roadside / shared external road',(69,17,-.13),(16,120,.24),ROAD)
+box('Roadside / campus verge',(56,17,-.14),(10,120,.3),GROUND)
+for y in range(-40,76,7):box('Roadside / yellow center dashes',(69,y,.012),(.14,3.6,.025),YELLOW)
+for x in (61.3,76.7):box('Roadside / continuous edge lines',(x,17,.012),(.13,120,.025),LINE)
+# Ground extension ties both gates into the existing east service lane.
+box('Roadside / internal gate approaches',(48,18,-.145),(12,100,.30),GROUND)
+
+def roadside_gate(number,cy):
+    n='Gate'+str(number)
+    def pos(u,v,z):return (54-v,cy+u,z)
+    def gb(part,u,v,z,w,d,h,material):box(n+' / '+part,pos(u,v,z),(d,w,h),material)
+    def gt(part,a,b,r,material):tube(n+' / '+part,pos(*a),pos(*b),r,material,8)
+    def caption(part,body,u,v,z,size,material=WHITE):text(n+' / '+part,body,pos(u,v,z),size,material,(math.pi/2,0,math.pi/2),FONT)
+    # Walls are outside the two clear access channels, not across the drive.
+    for u,w in ((-11,7),(11,7)):
+        gb('monument wall',u,0,1.5,w,.65,3,TILE)
+        gb('wall coping',u,0,3.03,w+.12,.77,.12,WHITE)
+        gb('SF sign panel',u,-.35,1.8,5.5,.08,1.18,DARK)
+        caption('SF wall lettering','SF EXPRESS',u,-.405,1.96,.60)
+        caption('Chinese wall lettering','顺丰速运' if FONT else 'SF EXPRESS',u,-.41,1.43,.35)
+    for u in (-7.6,7.6):
+        gb('gate pier',u,0,1.55,.36,.8,3.1,WHITE)
+        caption('entry number',str(number),u,-.43,2.6,.30,DARK)
+    # Zebra crossing across each apron, just before the shared roadside.
+    for i in range(18):gb('zebra crossing',-7.3+i*.85,-4.6,.022,.42,3.2,.026,LINE)
+    gb('stop line',4,-1.8,.022,5.8,.18,.026,LINE)
+    for u,direction in ((4,1),(-4,-1)):
+        gb('lane arrow stem',u,4,.025,.15,1.8,.03,LINE)
+        poly(n+' / lane arrow head',LINE,[pos(u-.55,4+direction*.5,.043),pos(u+.55,4+direction*.5,.043),pos(u,4+direction*1.5,.043)],[(0,1,2)])
+    # Upright barrier arm leaves photographed access usable in this static model.
+    gb('barrier cabinet',1.5,1,.62,.48,.5,1.24,RED)
+    gt('raised barrier arm',(1.5,1,1.1),(1.5,1,5.4),.055,WHITE)
+    for z in (1.7,2.6,3.5,4.4,5.2):gb('arm red band',1.5,1,z,.13,.13,.28,RED)
+    for u in (-6.7,6.7):
+        gb('yellow bollard',u,-.5,.46,.34,.34,.92,YELLOW)
+        gb('bollard black stripe',u,-.5,.55,.36,.36,.22,DARK)
+    # Gate camera and low pedestrian railings.
+    gt('CCTV pole',(6.9,1.2,0),(6.9,1.2,5.7),.065,METAL)
+    gt('CCTV crossarm',(6.9,1.2,5.6),(5.9,1.2,5.6),.04,METAL)
+    gb('CCTV housing',5.9,1.15,5.55,.25,.55,.21,WHITE)
+    for start,end in ((-7.3,-1.5),(6,7.2)):
+        for z in (.25,1.05):gt('pedestrian rail',(start,-2,z),(end,-2,z),.035,WHITE)
+        for i in range(int((end-start)/.27)+1):
+            u=start+i*.27;gt('pedestrian uprights',(u,-2,.1),(u,-2,1.05),.02,WHITE)
+    if number==1:
+        # Rounded silver kiosk with continuous front glazing and black SF fascia.
+        outline=round_outline(51.6,55.1,cy-1.65,cy+1.65,.65)
+        prism(n+' / rounded kiosk base',outline,.08,1.05,BOOTH)
+        prism(n+' / rounded kiosk glazing',outline,1.05,2.75,GLASS)
+        prism(n+' / curved black fascia',outline,2.75,3.6,DARK)
+        prism(n+' / silver roof cap',outline,3.60,3.70,METAL)
+        for u in (-1.1,0,1.1):gt('kiosk window mullions',(u,-1.13,1.0),(u,-1.13,2.75),.035,METAL)
+        gb('red fascia band',0,-1.14,2.86,2.25,.04,.06,RED)
+        caption('kiosk SF badge','SF',0,-1.17,3.23,.58)
+        caption('kiosk label','保安值班' if FONT else 'SECURITY',0,-1.17,1.48,.22)
+    else:
+        # Red duty booth and adjacent broad branded entrance wall.
+        gb('red duty booth',-4,1.3,1.22,2.7,2.4,2.44,RED)
+        gb('duty booth front glazing',-4,.075,1.56,2.35,.06,1.2,GLASS)
+        gb('duty booth side glazing',-2.62,1.3,1.56,.06,2,1.2,GLASS)
+        gb('duty booth roof',-4,1.3,2.52,3.05,2.75,.18,DARK)
+        for u in (-5.2,-4,-2.8):gb('booth mullion',u,.02,1.55,.06,.07,1.3,METAL)
+        # Faceted peaked canopy matching the photo silhouette.
+        poly(n+' / peaked canopy',DARK,[pos(-5.55,-.15,2.65),pos(-2.45,-.15,2.65),pos(-2.45,2.75,2.65),pos(-5.55,2.75,2.65),pos(-4,1.3,3.45)],[(0,1,4),(1,2,4),(2,3,4),(3,0,4)])
+        gb('large SF entrance wall',-10,2.6,2.1,8,.4,4.2,TILE)
+        gb('black entrance fascia',-10,2.6,4.15,8.4,.6,.9,DARK)
+        gb('fascia red line',-10,2.28,3.85,8.2,.04,.07,RED)
+        caption('large SF badge','SF EXPRESS',-10,2.36,2.5,.88,DARK)
+        caption('large Chinese badge','顺丰速运' if FONT else 'SF EXPRESS',-10,2.35,1.45,.55,DARK)
+        caption('fascia slogan','寄快递 找顺丰' if FONT else 'SF EXPRESS',-10,2.25,4.18,.48)
+        caption('exit wall label','出口' if FONT else 'EXIT',8,-.40,2.7,.38,RED)
+    return n
+
+roadside_gate(1,-23)
+roadside_gate(2,45)
+# Continuous roadside boundary between the two access openings.
+for ya,yb in ((-42,-37.5),(-8.5,30.5),(59.5,77)):
+    box('Roadside / boundary low wall',(54,(ya+yb)/2,.35),(.32,yb-ya,.7),TILE)
+    for y in range(math.ceil(ya),math.floor(yb)+1,3):tube('Roadside / boundary posts',(54,y,.6),(54,y,2.5),.045,FENCE)
+    for z in (.8,2.4):tube('Roadside / boundary rails',(54,ya,z),(54,yb,z),.026,FENCE)
+    for i in range(int((yb-ya)/.3)):
+        y=ya+i*.3;tube('Roadside / boundary mesh',(54,y,.7),(54,y,2.4),.012,FENCE,5)
+# Stylized vegetation retains an open line of sight from the road to each gate.
+for i,(x,y) in enumerate(((49,-38),(49,-8),(48,18),(47,58),(46,64))):
+    tube('Roadside / tree trunks',(x,y,0),(x,y,7.5),.18,BARK,9)
+    for j in range(6):
+        a=j*math.tau/6;cx=x+1.5*math.cos(a);cy=y+1.5*math.sin(a)
+        tube('Roadside / tree branches',(x,y,4),(cx,cy,7),.065,BARK,7)
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=2,radius=1,location=(cx,cy,7.4+(j%2)*.7))
+        leaf=bpy.context.object;leaf.name='Roadside / tree canopy';leaf.scale=(1.8,1.8,2.8 if i>=3 else 2.1);leaf.data.materials.append(materials[FOLIAGE[i%3]])
+
 # Build batched, named meshes. World-space planar UVs keep tile density consistent.
 for (name,material),(verts,faces) in geometry.items():
     mesh=bpy.data.meshes.new(name)
@@ -900,7 +995,7 @@ bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'logistics-building.blend'))
 bpy.ops.export_scene.gltf(filepath=str(ROOT/'logistics-building.glb'),export_format='GLB',export_cameras=False,export_lights=False,export_extras=True)
 mesh_count=sum(1 for o in scene.objects if o.type=='MESH')
 triangles=sum(len(p.vertices)-2 for o in scene.objects if o.type=='MESH' for p in o.data.polygons)
-(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg'],'bridgeDeckMeters':5.4,'stairRisers':28,'layoutNote':'Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
+(ROOT/'building-info.json').write_text(json.dumps({'meshObjects':mesh_count,'triangles':triangles,'glbBytes':(ROOT/'logistics-building.glb').stat().st_size,'sourcePhoto':'reference.jpg','additionalPhotos':['reference-right-bridge.jpg','reference-left-bridge.jpg','reference-ground-bridge.jpg','reference-right-warehouse.jpg','reference-front-entrance.jpg','reference-gate-1.jpg','reference-gate-2.jpg'],'bridgeDeckMeters':5.4,'stairRisers':28,'roadsideGates':{'axis':'east boundary; same north-south external road','centers':[[54,-23],[54,45]],'spacing':'provisional, not measured'},'layoutNote':'Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.','estimatedDimensionsMeters':{'frontage':135,'mainDepth':12,'mainHeight':16.7,'rearHallWidth':127,'rearHallDepth':54,'rearHallHeight':14},'accuracy':'Photo-guided approximation; unobserved sides and dimensions inferred.'},indent=2),encoding='utf-8')
 print('BUILDING_EXPORTED',mesh_count,triangles,flush=True)
 bpy.ops.render.render(write_still=True)
 print('BUILDING_RENDERED',flush=True)
@@ -932,6 +1027,16 @@ scene.render.resolution_y=1100
 scene.render.filepath=str(ROOT/'entrance-preview.png')
 bpy.ops.render.render(write_still=True)
 print('ENTRANCE_RENDERED',flush=True)
+
+# Shared-road gate overview, exported model remains unchanged.
+cam.location=(153,-58,78)
+cam.rotation_euler=(Vector((48,15,3))-cam.location).to_track_quat('-Z','Y').to_euler()
+cam.data.ortho_scale=145
+scene.render.resolution_x=1500
+scene.render.resolution_y=1000
+scene.render.filepath=str(ROOT/'gates-preview.png')
+bpy.ops.render.render(write_still=True)
+print('GATES_RENDERED',flush=True)
 
 # Review-only cutaway render: public model export above remains fully enclosed.
 for obj in scene.objects:

@@ -1,17 +1,33 @@
 {
-  "meshObjects": 573,
-  "triangles": 235824,
-  "glbBytes": 12871196,
+  "meshObjects": 680,
+  "triangles": 283832,
+  "glbBytes": 14727236,
   "sourcePhoto": "reference.jpg",
   "additionalPhotos": [
     "reference-right-bridge.jpg",
     "reference-left-bridge.jpg",
     "reference-ground-bridge.jpg",
     "reference-right-warehouse.jpg",
-    "reference-front-entrance.jpg"
+    "reference-front-entrance.jpg",
+    "reference-gate-1.jpg",
+    "reference-gate-2.jpg"
   ],
   "bridgeDeckMeters": 5.4,
   "stairRisers": 28,
+  "roadsideGates": {
+    "axis": "east boundary; same north-south external road",
+    "centers": [
+      [
+        54,
+        -23
+      ],
+      [
+        54,
+        45
+      ]
+    ],
+    "spacing": "provisional, not measured"
+  },
   "layoutNote": "Guard booth and stair building share front line; booth front entry connects via internal west door to stairs, with separate one-way turnstile exit between booth and stairwell. Vehicle road passes under bridge. Dimensions remain inferred.",
   "estimatedDimensionsMeters": {
     "frontage": 135,

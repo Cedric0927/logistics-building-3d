@@ -13,7 +13,7 @@ function walk(i,parent=new THREE.Matrix4()){
   const n=gltf.nodes[i],local=new THREE.Matrix4();
   if(n.matrix)local.fromArray(n.matrix);else local.compose(new THREE.Vector3(...(n.translation||[0,0,0])),new THREE.Quaternion(...(n.rotation||[0,0,0,1])),new THREE.Vector3(...(n.scale||[1,1,1])));
   const world=parent.clone().multiply(local);
-  if(n.mesh!==undefined){const bounds=new THREE.Box3();for(const p of gltf.meshes[n.mesh].primitives){const a=gltf.accessors[p.attributes.POSITION];bounds.union(new THREE.Box3(new THREE.Vector3(...a.min),new THREE.Vector3(...a.max)).applyMatrix4(world))}const triangles=[];if(n.name.startsWith('Entrance')||n.name.startsWith('Stairs'))for(const p of gltf.meshes[n.mesh].primitives){const pos=accessor(p.attributes.POSITION),ids=p.indices===undefined?Array.from({length:pos.length/3},(_,i)=>i):accessor(p.indices);for(let k=0;k<ids.length;k+=3)triangles.push(ids.slice(k,k+3).map(i=>new THREE.Vector3(...pos.slice(i*3,i*3+3)).applyMatrix4(world)))}parts.push({name:n.name.replaceAll('_',' '),bounds,triangles})}
+  if(n.mesh!==undefined){const bounds=new THREE.Box3();for(const p of gltf.meshes[n.mesh].primitives){const a=gltf.accessors[p.attributes.POSITION];bounds.union(new THREE.Box3(new THREE.Vector3(...a.min),new THREE.Vector3(...a.max)).applyMatrix4(world))}const triangles=[];if(/^(Entrance|Stairs|Gate|Security)/.test(n.name))for(const p of gltf.meshes[n.mesh].primitives){const pos=accessor(p.attributes.POSITION),ids=p.indices===undefined?Array.from({length:pos.length/3},(_,i)=>i):accessor(p.indices);for(let k=0;k<ids.length;k+=3)triangles.push(ids.slice(k,k+3).map(i=>new THREE.Vector3(...pos.slice(i*3,i*3+3)).applyMatrix4(world)))}parts.push({name:n.name.replaceAll('_',' '),bounds,triangles})}
   for(const c of n.children||[])walk(c,world);
 }
 for(const i of gltf.scenes[gltf.scene||0].nodes)walk(i);
@@ -68,4 +68,24 @@ test('left door immediately meets westbound first ascent and eastbound return as
   function riseDirection(name){const p=parts.find(p=>p.name===name),v=p.triangles.flat(),lo=p.bounds.min.y,hi=p.bounds.max.y;const avg=vs=>vs.reduce((s,p)=>s+p.x,0)/vs.length;return avg(v.filter(p=>Math.abs(p.y-hi)<.001))-avg(v.filter(p=>Math.abs(p.y-lo)<.001))}
   assert(riseDirection('Stairs / concrete treads / lower flight')< -3,'First flight must ascend left/west');
   assert(riseDirection('Stairs / concrete treads / upper flight')>3,'Second flight must ascend back right/east');
+});
+
+
+test('both roadside gates face one road and their vehicle channels cross the actual perimeter unobstructed',()=>{
+  const road=part('Roadside / shared external road');
+  assert(road.min.x>60 && road.max.x>76);
+  for(const [gate,cy] of [[1,-23],[2,45]]){
+    const crossing=part('Gate'+gate+' / zebra crossing');
+    assert(crossing.min.x>road.min.x-6 && crossing.max.x<road.min.x+1);
+    assert(-cy>road.min.z && -cy<road.max.z);
+    // Probe across both the old and new fence lines at truck-body height.
+    const obstacles=parts.filter(p=>/^(Gate|Security)/.test(p.name));
+    for(const offset of [2.7,4,5.3]){
+      const a=new THREE.Vector3(63,1.5,-cy-offset),ray=new THREE.Ray(a,new THREE.Vector3(-1,0,0));
+      for(const p of obstacles)for(const tri of p.triangles){
+        const hit=ray.intersectTriangle(...tri,false,new THREE.Vector3());
+        assert(!hit || hit.distanceTo(a)>19,'Gate '+gate+' vehicle channel blocked by '+p.name);
+      }
+    }
+  }
 });
